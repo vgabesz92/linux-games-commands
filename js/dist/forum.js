@@ -576,14 +576,14 @@
           m('.lgc-grid-2', [
             m('.lgc-field', [
               m('label', 'Belső Render Felbontás (-w x -h):'),
-              m('.lgc-grid-2', [
+              m('.lgc-grid-nested-2', [
                 m('input[type=number]', {
-                  placeholder: 'Szélesség (pl. 1280)',
+                  placeholder: 'Szélesség (1280)',
                   value: this.gsGameW,
                   oninput: e => { this.gsGameW = e.target.value; }
                 }),
                 m('input[type=number]', {
-                  placeholder: 'Magasság (pl. 800)',
+                  placeholder: 'Magasság (800)',
                   value: this.gsGameH,
                   oninput: e => { this.gsGameH = e.target.value; }
                 })
@@ -591,14 +591,14 @@
             ]),
             m('.lgc-field', [
               m('label', 'Kimeneti Felbontás (-W x -H):'),
-              m('.lgc-grid-2', [
+              m('.lgc-grid-nested-2', [
                 m('input[type=number]', {
-                  placeholder: 'Monitor Szél. (pl. 1920)',
+                  placeholder: 'Kijelző szél. (1920)',
                   value: this.gsOutW,
                   oninput: e => { this.gsOutW = e.target.value; }
                 }),
                 m('input[type=number]', {
-                  placeholder: 'Monitor Mag. (pl. 1080)',
+                  placeholder: 'Kijelző mag. (1080)',
                   value: this.gsOutH,
                   oninput: e => { this.gsOutH = e.target.value; }
                 })
@@ -864,24 +864,29 @@
         m('.lgc-section', [
           m('.lgc-section-header', [m('i.fas.fa-plus-circle'), ' Egyedi DLL hozzáadása']),
           m('.lgc-grid-3', [
-            m('input[type=text]', {
-              placeholder: t('gabeszm-linux-games-commands.forum.dll_name_placeholder', 'DLL neve (pl. version vagy dxgi)'),
-              value: this.customDllName,
-              oninput: e => { this.customDllName = e.target.value; },
-              onkeydown: e => { if (e.key === 'Enter') this.addCustomDll(); }
-            }),
-            m('select', {
-              value: this.customDllType,
-              onchange: e => { this.customDllType = e.target.value; }
-            }, [
-              m('option[value="n,b"]', 'n,b (Native, utána Builtin)'),
-              m('option[value="b,n"]', 'b,n (Builtin, utána Native)'),
-              m('option[value="n"]', 'n (Csak Native)'),
-              m('option[value="b"]', 'b (Csak Builtin)'),
-              m('option[value="d"]', 'd (Letiltva / Disabled)')
+            m('.lgc-field', [
+              m('input[type=text]', {
+                placeholder: t('gabeszm-linux-games-commands.forum.dll_name_placeholder', 'DLL neve (pl. version vagy dxgi)'),
+                value: this.customDllName,
+                oninput: e => { this.customDllName = e.target.value; },
+                onkeydown: e => { if (e.key === 'Enter') this.addCustomDll(); }
+              })
+            ]),
+            m('.lgc-field', [
+              m('select', {
+                value: this.customDllType,
+                onchange: e => { this.customDllType = e.target.value; }
+              }, [
+                m('option[value="n,b"]', 'n,b (Native, utána Builtin)'),
+                m('option[value="b,n"]', 'b,n (Builtin, utána Native)'),
+                m('option[value="n"]', 'n (Csak Native)'),
+                m('option[value="b"]', 'b (Csak Builtin)'),
+                m('option[value="d"]', 'd (Letiltva / Disabled)')
+              ])
             ]),
             m('button.Button.Button--primary', {
               type: 'button',
+              style: 'width: 100%; white-space: nowrap;',
               onclick: () => this.addCustomDll()
             }, t('gabeszm-linux-games-commands.forum.add_custom_dll', '+ Egyedi DLL hozzáadása'))
           ]),
