@@ -1,4 +1,5 @@
 // Linux Games Commands - Forum Styles
+// Átlátható, modern kártya- és modulrendszer
 
 // 1. Gombok a felületen (Hero, Sidebar, Toolbar)
 .LinuxGamesCommands-sidebar-btn {
@@ -33,7 +34,7 @@
 
 // 2. A fő Modal stílusai
 .LinuxGamesCommandsModal {
-  max-width: 860px;
+  max-width: 880px;
   width: 95%;
   margin: 15px auto;
   box-sizing: border-box;
@@ -44,11 +45,11 @@
     color: #c9d1d9;
     border: 1px solid #30363d;
     border-radius: 12px;
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
+    overflow-x: hidden !important;
   }
 
   .Modal-body {
@@ -56,13 +57,13 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    overflow-x: hidden;
+    overflow-x: hidden !important;
   }
 
   .Modal-header {
     border-bottom: 1px solid #21262d;
-    padding-bottom: 14px;
-    margin-bottom: 14px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
 
     h3 {
       font-size: 1.2rem;
@@ -77,12 +78,6 @@
         color: #58a6ff;
         flex-shrink: 0;
       }
-    }
-
-    p.subtitle {
-      margin: 4px 0 0 0;
-      font-size: 0.85rem;
-      color: #8b949e;
     }
   }
 
@@ -107,6 +102,8 @@
       color: #8b949e;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
       flex-shrink: 0;
     }
 
@@ -114,10 +111,13 @@
       background: #21262d;
       border: 1px solid #30363d;
       color: #c9d1d9;
-      font-size: 0.8rem;
-      padding: 4px 10px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 5px 12px;
       border-radius: 20px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
       transition: all 0.15s ease;
       white-space: nowrap;
 
@@ -125,6 +125,13 @@
         background: #30363d;
         color: #58a6ff;
         border-color: #58a6ff;
+      }
+
+      &.active {
+        background: rgba(56, 139, 253, 0.2);
+        color: #58a6ff;
+        border-color: #388bfd;
+        box-shadow: 0 0 10px rgba(56, 139, 253, 0.25);
       }
     }
   }
@@ -143,32 +150,35 @@
 
     .lgc-tab-btn {
       background: transparent;
-      border: none;
+      border: 1px solid transparent;
       color: #8b949e;
       font-weight: 600;
       font-size: 0.85rem;
-      padding: 7px 12px;
+      padding: 8px 14px;
       border-radius: 6px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
       transition: all 0.2s ease;
       white-space: nowrap;
 
       &:hover {
         color: #f0f6fc;
         background: #161b22;
+        border-color: #21262d;
       }
 
       &.active {
         color: #58a6ff;
-        background: rgba(56, 139, 253, 0.15);
-        border: 1px solid rgba(56, 139, 253, 0.3);
+        background: rgba(56, 139, 253, 0.12);
+        border-color: rgba(56, 139, 253, 0.35);
       }
     }
   }
 
-  // Fül tartalmak (szigorúan tiltva a vízszintes görgetés)
+  // Fül tartalmak görgetése (szigorúan tiltva a vízszintes görgetés)
   .lgc-tab-content {
-    max-height: 440px;
+    max-height: 460px;
     overflow-y: auto;
     overflow-x: hidden !important;
     padding-right: 4px;
@@ -186,30 +196,240 @@
     }
   }
 
-  // Szekciók és kártyák a fülön belül
-  .lgc-section {
-    margin-bottom: 12px;
+  // Kártyák (Cards) a vizuális áttekinthetőségért
+  .lgc-card {
     background: #161b22;
-    border: 1px solid #21262d;
-    border-radius: 8px;
-    padding: 12px 14px;
+    border: 1px solid #282e36;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    overflow: hidden;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    transition: border-color 0.2s ease;
 
-    .lgc-section-header {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: #79c0ff;
-      margin-bottom: 10px;
+    &:hover {
+      border-color: #388bfd44;
+    }
+
+    .lgc-card-header {
       display: flex;
       align-items: center;
-      gap: 6px;
-      word-break: break-word;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid #21262d;
+      box-sizing: border-box;
+
+      .header-icon {
+        font-size: 0.95rem;
+        flex-shrink: 0;
+
+        &.blue { color: #58a6ff; }
+        &.cyan { color: #39c5bb; }
+        &.purple { color: #bc8cff; }
+        &.amber { color: #d29922; }
+        &.emerald { color: #3fb950; }
+      }
+
+      .header-title {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #f0f6fc;
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
+    .lgc-card-body {
+      padding: 12px 14px;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
     }
   }
 
-  // Grid elrendezések minmax(0, 1fr)-rel a cellák túlcsordulása ellen
+  // Kártya stílusú jelölőnégyzet kapcsolók (Toggle Cards)
+  .lgc-toggle-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 8px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:hover {
+      border-color: #388bfd;
+      background: rgba(56, 139, 253, 0.03);
+    }
+
+    &.active {
+      border-color: #1f6feb;
+      background: rgba(31, 111, 235, 0.09);
+      box-shadow: 0 0 8px rgba(31, 111, 235, 0.15);
+
+      strong {
+        color: #58a6ff;
+      }
+    }
+
+    input[type="checkbox"] {
+      margin-top: 3px;
+      accent-color: #1f6feb;
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .lgc-toggle-content {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
+
+      strong {
+        font-size: 0.85rem;
+        color: #f0f6fc;
+        word-break: break-word;
+        transition: color 0.15s ease;
+      }
+
+      span.desc {
+        font-size: 0.75rem;
+        color: #8b949e;
+        word-break: break-word;
+        line-height: 1.4;
+        margin-top: 2px;
+      }
+    }
+  }
+
+  // Kategória jelvények (Badges)
+  .lgc-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 12px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &.badge-blue {
+      background: rgba(56, 139, 253, 0.15);
+      color: #58a6ff;
+      border: 1px solid rgba(56, 139, 253, 0.3);
+    }
+    &.badge-cyan {
+      background: rgba(57, 197, 187, 0.15);
+      color: #39c5bb;
+      border: 1px solid rgba(57, 197, 187, 0.3);
+    }
+    &.badge-purple {
+      background: rgba(188, 140, 255, 0.15);
+      color: #bc8cff;
+      border: 1px solid rgba(188, 140, 255, 0.3);
+    }
+    &.badge-amber {
+      background: rgba(210, 153, 34, 0.15);
+      color: #d29922;
+      border: 1px solid rgba(210, 153, 34, 0.3);
+    }
+    &.badge-emerald {
+      background: rgba(63, 185, 80, 0.15);
+      color: #3fb950;
+      border: 1px solid rgba(63, 185, 80, 0.3);
+    }
+    &.badge-dx {
+      background: rgba(56, 139, 253, 0.15);
+      color: #58a6ff;
+      border: 1px solid rgba(56, 139, 253, 0.3);
+    }
+    &.badge-mod {
+      background: rgba(188, 140, 255, 0.15);
+      color: #bc8cff;
+      border: 1px solid rgba(188, 140, 255, 0.3);
+    }
+    &.badge-vr {
+      background: rgba(210, 153, 34, 0.15);
+      color: #d29922;
+      border: 1px solid rgba(210, 153, 34, 0.3);
+    }
+    &.badge-gray {
+      background: rgba(110, 118, 129, 0.15);
+      color: #8b949e;
+      border: 1px solid rgba(110, 118, 129, 0.3);
+    }
+  }
+
+  // Harmonika (Accordion) kártyák
+  .lgc-accordion-card {
+    .lgc-accordion-btn {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      color: #c9d1d9;
+      text-align: left;
+      box-sizing: border-box;
+      transition: background 0.15s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .lgc-accordion-title-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        flex: 1;
+
+        .header-title {
+          font-size: 0.88rem;
+          font-weight: 600;
+          color: #f0f6fc;
+        }
+      }
+
+      .accordion-chevron {
+        font-size: 0.85rem;
+        color: #8b949e;
+        transition: transform 0.25s ease, color 0.2s ease;
+        flex-shrink: 0;
+
+        &.open {
+          transform: rotate(180deg);
+          color: #58a6ff;
+        }
+      }
+    }
+
+    .accordion-body {
+      border-top: 1px solid #21262d;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 12px 14px;
+      box-sizing: border-box;
+    }
+  }
+
+  // Grid elrendezések minmax(0, 1fr)-rel túlcsordulás ellen
   .lgc-grid-2 {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -249,7 +469,7 @@
     }
   }
 
-  // Reszponzív töréspontok: kis és közepes képernyőkön automatikus egymás alá törés
+  // Reszponzív töréspontok: kis és közepes képernyőkön egymás alá törés
   @media (max-width: 768px) {
     .lgc-grid-2, .lgc-grid-3 {
       grid-template-columns: 1fr;
@@ -300,6 +520,8 @@
       color: #8b949e;
       white-space: normal;
       word-break: break-word;
+      display: flex;
+      align-items: center;
     }
 
     input, select, textarea {
@@ -328,47 +550,6 @@
     }
   }
 
-  .lgc-checkbox-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 6px 0;
-    cursor: pointer;
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-
-    input[type="checkbox"] {
-      margin-top: 3px;
-      accent-color: #1f6feb;
-      cursor: pointer;
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-    }
-
-    .lgc-checkbox-label {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      flex: 1;
-
-      strong {
-        font-size: 0.85rem;
-        color: #f0f6fc;
-        word-break: break-word;
-      }
-
-      span.desc {
-        font-size: 0.75rem;
-        color: #8b949e;
-        word-break: break-word;
-        line-height: 1.4;
-      }
-    }
-  }
-
   // DLL lista elemek (reszponzívan törhető elrendezés)
   .lgc-dll-row {
     display: flex;
@@ -376,7 +557,7 @@
     justify-content: space-between;
     gap: 10px;
     flex-wrap: wrap;
-    padding: 7px 10px;
+    padding: 8px 12px;
     border-radius: 6px;
     background: #0d1117;
     margin-bottom: 6px;
@@ -385,54 +566,143 @@
     max-width: 100%;
     box-sizing: border-box;
     min-width: 0;
+    transition: all 0.15s ease;
 
     &:hover {
-      border-color: #30363d;
+      border-color: #388bfd66;
+    }
+
+    &.checked {
+      border-color: rgba(63, 185, 80, 0.4);
+      background: rgba(63, 185, 80, 0.04);
     }
 
     .lgc-dll-info {
       display: flex;
       align-items: center;
       gap: 10px;
-      flex: 1 1 180px;
+      flex: 1 1 200px;
       min-width: 0;
 
       input[type="checkbox"] {
-        accent-color: #1f6feb;
+        accent-color: #238636;
         width: 16px;
         height: 16px;
         flex-shrink: 0;
+        cursor: pointer;
       }
 
-      strong {
-        font-family: monospace;
-        font-size: 0.9rem;
+      .lgc-dll-name {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.88rem;
+        font-weight: 700;
         color: #79c0ff;
-        min-width: 65px;
+        min-width: 75px;
         flex-shrink: 0;
       }
 
-      span {
-        font-size: 0.75rem;
+      .lgc-dll-desc {
+        font-size: 0.78rem;
         color: #8b949e;
         word-break: break-word;
       }
     }
 
-    select {
+    .lgc-dll-select {
       background: #161b22;
       border: 1px solid #30363d;
       color: #c9d1d9;
-      font-size: 0.75rem;
-      padding: 4px 6px;
+      font-size: 0.78rem;
+      padding: 5px 8px;
       border-radius: 4px;
-      width: 150px;
+      width: 160px;
       max-width: 100%;
       flex-shrink: 0;
+
+      &:focus {
+        border-color: #58a6ff;
+        outline: none;
+      }
     }
   }
 
-  // Kimeneti parancs doboz
+  // Pipeline folyamatábra a Sorrend fülön
+  .lgc-pipeline-flow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    width: 100%;
+    box-sizing: border-box;
+
+    .lgc-pipeline-step {
+      flex: 1 1 140px;
+      padding: 10px;
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      min-width: 0;
+      text-align: center;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+
+      &.active {
+        border-color: #388bfd;
+        background: rgba(56, 139, 253, 0.08);
+        box-shadow: 0 0 10px rgba(56, 139, 253, 0.15);
+
+        .step-badge {
+          background: #1f6feb;
+          color: #ffffff;
+        }
+
+        .step-title {
+          color: #58a6ff;
+        }
+      }
+
+      .step-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+        border-radius: 50%;
+        margin: 0 auto 6px;
+        background: #21262d;
+        color: #8b949e;
+        display: block;
+      }
+
+      .step-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #f0f6fc;
+      }
+
+      .step-desc {
+        font-size: 0.72rem;
+        color: #8b949e;
+        word-break: break-word;
+        margin-top: 4px;
+        line-height: 1.3;
+      }
+    }
+
+    .lgc-pipeline-connector {
+      color: #30363d;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+
+      @media (max-width: 600px) {
+        display: none;
+      }
+    }
+  }
+
+  // Kimeneti parancs doboz (Terminal stílus)
   .lgc-output-container {
     background: #05070a;
     border: 1px solid #30363d;
@@ -476,10 +746,14 @@
         }
       }
 
-      .lgc-output-status {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #3fb950;
+      .lgc-output-badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #58a6ff;
+        background: rgba(56, 139, 253, 0.12);
+        padding: 2px 8px;
+        border-radius: 4px;
+        border: 1px solid rgba(56, 139, 253, 0.25);
       }
     }
 
@@ -500,7 +774,7 @@
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
-      overflow-x: hidden;
+      overflow-x: hidden !important;
       display: flex;
       align-items: center;
     }
@@ -518,7 +792,7 @@
       }
 
       .btn-insert {
-        background: #238636;
+        background: linear-gradient(135deg, #238636 0%, #1a6328 100%);
         border: 1px solid #2ea043;
         color: #ffffff;
         font-weight: 600;
@@ -529,11 +803,13 @@
         align-items: center;
         gap: 8px;
         font-size: 0.9rem;
+        box-shadow: 0 2px 8px rgba(35, 134, 54, 0.3);
         transition: all 0.2s ease;
 
         &:hover {
-          background: #2ea043;
-          box-shadow: 0 0 10px rgba(46, 160, 67, 0.4);
+          background: linear-gradient(135deg, #2ea043 0%, #238636 100%);
+          box-shadow: 0 0 12px rgba(46, 160, 67, 0.5);
+          transform: translateY(-1px);
         }
       }
 
