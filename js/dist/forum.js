@@ -26,6 +26,17 @@
   const DiscussionHero = resolve('core', 'forum/components/DiscussionHero');
   const IndexSidebar = resolve('core', 'forum/components/IndexSidebar');
 
+  // Emojik levágása a címkék elejéről a dupla ikonok elkerülésére
+  const stripEmoji = (str) => {
+    if (!str || typeof str !== 'string') return '';
+    return str.replace(/^[\p{Emoji}\u200d\uFE0F\s]+/gu, '').trim();
+  };
+
+  const safeTrans = (k, def) => {
+    const text = (app && app.translator) ? app.translator.trans(k) : def;
+    return stripEmoji(text) || def;
+  };
+
   // Felbontás gyorssablonok
   const RESOLUTION_PRESETS = [
     { label: 'Válassz felbontást...', value: '' },
@@ -101,7 +112,7 @@
     }
 
     title() {
-      const t = app && app.translator ? app.translator.trans('gabeszm-linux-games-commands.forum.modal_title') : 'Steam & Linux Parancskészítő';
+      const t = safeTrans('gabeszm-linux-games-commands.forum.modal_title', 'Steam & Linux Játék Indítási Parancskészítő');
       return [
         m('i.fas.fa-gamepad', { style: 'margin-right: 8px;' }),
         t
@@ -121,7 +132,6 @@
       this.gsShowAdvanced = false;
       this.prShowAdvancedDxvk = false;
       this.prShowAdvancedSync = false;
-      this.prShowAdvancedIntegrations = false;
 
       // Wrapperek
       this.useGamemode = false;
@@ -541,7 +551,7 @@
       }
 
       if (app && app.alerts && inserted) {
-        const alertMsg = (app.translator ? app.translator.trans('gabeszm-linux-games-commands.forum.inserted_alert') : null) || 'Parancs sikeresen beillesztve a bejegyzésbe!';
+        const alertMsg = safeTrans('gabeszm-linux-games-commands.forum.inserted_alert', 'Parancs sikeresen beillesztve a bejegyzésbe!');
         app.alerts.show({ type: 'success' }, alertMsg);
       }
 
@@ -550,76 +560,92 @@
       }
     }
 
-    // Fülváltó renderelés
+    // Fülváltó renderelés panelben
     renderTabs() {
-      const t = (k, def) => (app && app.translator ? app.translator.trans(k) : def);
       const tabs = [
-        { id: 'quick', icon: 'fa-bolt', label: t('gabeszm-linux-games-commands.forum.tabs.quick', 'Gyors eszközök') },
-        { id: 'gamescope', icon: 'fa-desktop', label: t('gabeszm-linux-games-commands.forum.tabs.gamescope', 'Gamescope') },
-        { id: 'proton', icon: 'fa-gear', label: t('gabeszm-linux-games-commands.forum.tabs.proton', 'Proton & Grafika') },
-        { id: 'dll', icon: 'fa-cubes', label: t('gabeszm-linux-games-commands.forum.tabs.dll', 'DLL Felülbírálás') },
-        { id: 'order', icon: 'fa-arrow-down-short-wide', label: t('gabeszm-linux-games-commands.forum.tabs.order', 'Sorrend & Parancs') }
+        { id: 'quick', icon: 'fa-bolt', label: safeTrans('gabeszm-linux-games-commands.forum.tabs.quick', 'Gyors eszközök') },
+        { id: 'gamescope', icon: 'fa-desktop', label: safeTrans('gabeszm-linux-games-commands.forum.tabs.gamescope', 'Gamescope') },
+        { id: 'proton', icon: 'fa-gear', label: safeTrans('gabeszm-linux-games-commands.forum.tabs.proton', 'Proton & Grafika') },
+        { id: 'dll', icon: 'fa-cubes', label: safeTrans('gabeszm-linux-games-commands.forum.tabs.dll', 'DLL Felülbírálás') },
+        { id: 'order', icon: 'fa-arrow-down-short-wide', label: safeTrans('gabeszm-linux-games-commands.forum.tabs.order', 'Sorrend & Parancs') }
       ];
 
-      return m('.lgc-tabs-nav', tabs.map(tab => {
-        const isActive = this.activeTab === tab.id;
-        return m('button.lgc-tab-btn', {
-          type: 'button',
-          className: isActive ? 'active' : '',
-          onclick: () => { this.activeTab = tab.id; }
-        }, [
-          m(`i.fas.${tab.icon}`, { style: 'margin-right: 6px;' }),
-          tab.label
-        ]);
-      }));
+      return m('.lgc-panel.lgc-tabs-panel', [
+        m('.lgc-tabs-nav', tabs.map(tab => {
+          const isActive = this.activeTab === tab.id;
+          return m('button.lgc-tab-btn', {
+            type: 'button',
+            className: isActive ? 'active' : '',
+            onclick: () => { this.activeTab = tab.id; }
+          }, [
+            m(`i.fas.${tab.icon}`, { style: 'margin-right: 6px;' }),
+            tab.label
+          ]);
+        }))
+      ]);
     }
 
-    // Gyors sablon gombok
+    // Gyors sablon gombok panelben
     renderPresetsBar() {
-      const t = (k, def) => (app && app.translator ? app.translator.trans(k) : def);
-      return m('.lgc-presets-bar', [
-        m('.lgc-presets-title', [
-          m('i.fas.fa-wand-magic-sparkles', { style: 'margin-right: 5px; color: #58a6ff;' }),
-          t('gabeszm-linux-games-commands.forum.presets.title', 'Gyors Sablonok:')
+      return m('.lgc-panel.lgc-presets-panel', [
+        m('.lgc-presets-header', [
+          m('i.fas.fa-wand-magic-sparkles.presets-header-icon'),
+          m('span.lgc-presets-title', safeTrans('gabeszm-linux-games-commands.forum.presets.title', 'Gyors Sablonok:'))
         ]),
-        m('button.lgc-preset-pill', {
-          type: 'button',
-          className: this.activePreset === 'steam_deck' ? 'active' : '',
-          onclick: () => this.applyPreset('steam_deck')
-        }, [m('i.fas.fa-gamepad', { style: 'margin-right: 4px;' }), t('gabeszm-linux-games-commands.forum.presets.steam_deck', 'Steam Deck FSR')]),
-        m('button.lgc-preset-pill', {
-          type: 'button',
-          className: this.activePreset === 'performance' ? 'active' : '',
-          onclick: () => this.applyPreset('performance')
-        }, [m('i.fas.fa-gauge-high', { style: 'margin-right: 4px;' }), t('gabeszm-linux-games-commands.forum.presets.performance', 'Max Teljesítmény')]),
-        m('button.lgc-preset-pill', {
-          type: 'button',
-          className: this.activePreset === 'modding' ? 'active' : '',
-          onclick: () => this.applyPreset('modding')
-        }, [m('i.fas.fa-wrench', { style: 'margin-right: 4px;' }), t('gabeszm-linux-games-commands.forum.presets.modding', 'Modding / ReShade')]),
-        m('button.lgc-preset-pill', {
-          type: 'button',
-          className: this.activePreset === 'nvidia' ? 'active' : '',
-          onclick: () => this.applyPreset('nvidia')
-        }, [m('i.fas.fa-microchip', { style: 'margin-right: 4px;' }), t('gabeszm-linux-games-commands.forum.presets.nvidia', 'Nvidia RTX & DLSS')]),
-        m('button.lgc-preset-pill', {
-          type: 'button',
-          className: this.activePreset === 'debug' ? 'active' : '',
-          onclick: () => this.applyPreset('debug')
-        }, [m('i.fas.fa-bug', { style: 'margin-right: 4px;' }), t('gabeszm-linux-games-commands.forum.presets.debug', 'Hibakeresés (Log)')])
+        m('.lgc-presets-list', [
+          m('button.lgc-preset-pill', {
+            type: 'button',
+            className: this.activePreset === 'steam_deck' ? 'active' : '',
+            onclick: () => this.applyPreset('steam_deck')
+          }, [
+            m('i.fas.fa-gamepad', { style: 'margin-right: 5px;' }),
+            safeTrans('gabeszm-linux-games-commands.forum.presets.steam_deck', 'Steam Deck FSR')
+          ]),
+          m('button.lgc-preset-pill', {
+            type: 'button',
+            className: this.activePreset === 'performance' ? 'active' : '',
+            onclick: () => this.applyPreset('performance')
+          }, [
+            m('i.fas.fa-gauge-high', { style: 'margin-right: 5px;' }),
+            safeTrans('gabeszm-linux-games-commands.forum.presets.performance', 'Max Teljesítmény')
+          ]),
+          m('button.lgc-preset-pill', {
+            type: 'button',
+            className: this.activePreset === 'modding' ? 'active' : '',
+            onclick: () => this.applyPreset('modding')
+          }, [
+            m('i.fas.fa-wrench', { style: 'margin-right: 5px;' }),
+            safeTrans('gabeszm-linux-games-commands.forum.presets.modding', 'Modding / ReShade')
+          ]),
+          m('button.lgc-preset-pill', {
+            type: 'button',
+            className: this.activePreset === 'nvidia' ? 'active' : '',
+            onclick: () => this.applyPreset('nvidia')
+          }, [
+            m('i.fas.fa-microchip', { style: 'margin-right: 5px;' }),
+            safeTrans('gabeszm-linux-games-commands.forum.presets.nvidia', 'Nvidia RTX & DLSS')
+          ]),
+          m('button.lgc-preset-pill', {
+            type: 'button',
+            className: this.activePreset === 'debug' ? 'active' : '',
+            onclick: () => this.applyPreset('debug')
+          }, [
+            m('i.fas.fa-bug', { style: 'margin-right: 5px;' }),
+            safeTrans('gabeszm-linux-games-commands.forum.presets.debug', 'Hibakeresés (Log)')
+          ])
+        ])
       ]);
     }
 
     // Kimeneti parancsdoboz renderelése (szigorúan 2 gombbal: beillesztés és törlés)
     renderOutputBox() {
       const cmd = this.buildCommand();
-      const t = (k, def) => (app && app.translator ? app.translator.trans(k) : def);
 
       return m('.lgc-output-container', [
         m('.lgc-output-header', [
           m('.lgc-output-title-group', [
             m('.terminal-dots', [m('span'), m('span'), m('span')]),
-            m('.lgc-output-label', t('gabeszm-linux-games-commands.forum.output_label', 'GENERÁLT STEAM INDÍTÁSI PARANCS:'))
+            m('.lgc-output-label', safeTrans('gabeszm-linux-games-commands.forum.output_label', 'GENERÁLT STEAM INDÍTÁSI PARANCS:'))
           ]),
           m('.lgc-output-badge', [
             m('i.fas.fa-terminal', { style: 'margin-right: 4px;' }),
@@ -634,7 +660,7 @@
               onclick: () => this.insertToPost()
             }, [
               m('i.fas.fa-pen-to-square'),
-              ' ' + t('gabeszm-linux-games-commands.forum.insert_to_post', 'Beillesztés a hozzászólásba')
+              ' ' + safeTrans('gabeszm-linux-games-commands.forum.insert_to_post', 'Beillesztés a hozzászólásba')
             ])
           ]),
           m('button.btn-clear', {
@@ -642,7 +668,7 @@
             onclick: () => this.clearAll()
           }, [
             m('i.fas.fa-trash-alt', { style: 'margin-right: 6px;' }),
-            t('gabeszm-linux-games-commands.forum.clear', 'Minden törlése')
+            safeTrans('gabeszm-linux-games-commands.forum.clear', 'Minden törlése')
           ])
         ])
       ]);
@@ -773,7 +799,7 @@
             m('.lgc-grid-2', [
               m('.lgc-field', [
                 m('label', [
-                  m('i.fas.fa-gamepad', { style: 'margin-right: 4px;' }),
+                  m('i.fas.fa-gamepad', { style: 'margin-right: 5px; color: #58a6ff;' }),
                   'Belső Render Felbontás (-w × -h):'
                 ]),
                 m('select', {
@@ -796,7 +822,7 @@
 
               m('.lgc-field', [
                 m('label', [
-                  m('i.fas.fa-tv', { style: 'margin-right: 4px;' }),
+                  m('i.fas.fa-tv', { style: 'margin-right: 5px; color: #39c5bb;' }),
                   'Kimeneti Monitor Felbontás (-W × -H):'
                 ]),
                 m('select', {
@@ -1417,13 +1443,11 @@
 
     // 4. Wine DLL Overrides fül
     tabDll() {
-      const t = (k, def) => (app && app.translator ? app.translator.trans(k) : def);
-
-      // Csoportosítás kategóriák szerint
+      // Csoportosítás kategóriák szerint, tiszta FontAwesome ikonokkal
       const categories = [
-        { key: 'DirectX / Grafika', label: '🎨 DirectX & Grafikai Könyvtárak', badgeClass: 'badge-dx' },
-        { key: 'Mod-Loaderek & Injektorok', label: '🛠️ Mod-Loaderek & Injektor Könyvtárak', badgeClass: 'badge-mod' },
-        { key: 'VR & Hardver', label: '🥽 VR & Hardver / Kiegészítők', badgeClass: 'badge-vr' }
+        { key: 'DirectX / Grafika', label: 'DirectX & Grafikai Könyvtárak', badgeClass: 'badge-dx', icon: 'fa-cubes-stacked', iconColor: 'blue' },
+        { key: 'Mod-Loaderek & Injektorok', label: 'Mod-Loaderek & Injektor Könyvtárak', badgeClass: 'badge-mod', icon: 'fa-screwdriver-wrench', iconColor: 'purple' },
+        { key: 'VR & Hardver', label: 'VR & Hardver / Kiegészítők', badgeClass: 'badge-vr', icon: 'fa-vr-cardboard', iconColor: 'amber' }
       ];
 
       return m('div', [
@@ -1452,7 +1476,10 @@
           const dllsInCat = this.predefinedDlls.filter(d => d.cat === cat.key);
           return m('.lgc-card', [
             m('.lgc-card-header', [
-              m('span.header-title', cat.label),
+              m('.lgc-card-title-group', [
+                m(`i.fas.${cat.icon}.header-icon.${cat.iconColor}`, { style: 'margin-right: 8px;' }),
+                m('span.header-title', cat.label)
+              ]),
               m(`span.lgc-badge.${cat.badgeClass}`, `${dllsInCat.filter(d => d.checked).length} kiválasztva`)
             ]),
             m('.lgc-card-body', [
@@ -1493,7 +1520,7 @@
             m('.lgc-grid-3', [
               m('.lgc-field', [
                 m('input[type=text]', {
-                  placeholder: t('gabeszm-linux-games-commands.forum.dll_name_placeholder', 'DLL neve (pl. winhttp vagy ddraw)'),
+                  placeholder: safeTrans('gabeszm-linux-games-commands.forum.dll_name_placeholder', 'DLL neve (pl. winhttp vagy ddraw)'),
                   value: this.customDllName,
                   oninput: e => { this.customDllName = e.target.value; },
                   onkeydown: e => { if (e.key === 'Enter') this.addCustomDll(); }
@@ -1517,7 +1544,7 @@
                 onclick: () => this.addCustomDll()
               }, [
                 m('i.fas.fa-plus', { style: 'margin-right: 6px;' }),
-                t('gabeszm-linux-games-commands.forum.add_custom_dll', 'Hozzáadás')
+                safeTrans('gabeszm-linux-games-commands.forum.add_custom_dll', 'Hozzáadás')
               ])
             ]),
 
@@ -1635,9 +1662,6 @@
     app.initializers.add('gabeszm-linux-games-commands', () => {
       console.log('[Linux Games Commands] Extension initialized successfully');
 
-      // Segédfüggvény szövegekhez fallback-kel
-      const trans = (k, def) => (app.translator ? app.translator.trans(k) : def);
-
       // 1. TextEditor (Hozzászólás- és témakészítő eszköztár)
       if (extend && TextEditor && TextEditor.prototype) {
         extend(TextEditor.prototype, 'toolbarItems', function (items) {
@@ -1649,7 +1673,7 @@
           items.add('linux-games-commands', m(Button, {
             icon: 'fas fa-gamepad',
             className: 'Button Button--icon Button--link Button-linux-games-commands',
-            title: trans('gabeszm-linux-games-commands.forum.toolbar_tooltip', 'Steam & Linux Indítási Parancskészítő'),
+            title: safeTrans('gabeszm-linux-games-commands.forum.toolbar_tooltip', 'Steam & Linux Indítási Parancskészítő'),
             onclick: () => {
               if (app.modal) {
                 app.modal.show(LinuxGamesCommandsModal, {
@@ -1680,7 +1704,7 @@
                 });
               }
             }
-          }, trans('gabeszm-linux-games-commands.forum.sidebar_button', '🎮 Linux Launch Builder')), 60);
+          }, safeTrans('gabeszm-linux-games-commands.forum.sidebar_button', 'Linux Launch Builder')), 60);
         });
       }
 
@@ -1702,7 +1726,7 @@
                 });
               }
             }
-          }, trans('gabeszm-linux-games-commands.forum.hero_button', '🎮 Indítási Opciók')), 10);
+          }, safeTrans('gabeszm-linux-games-commands.forum.hero_button', 'Indítási Opciók')), 10);
         });
       }
 
@@ -1717,7 +1741,7 @@
                 app.modal.show(LinuxGamesCommandsModal, {});
               }
             }
-          }, trans('gabeszm-linux-games-commands.forum.sidebar_button', '🎮 Linux Launch Builder')), 10);
+          }, safeTrans('gabeszm-linux-games-commands.forum.sidebar_button', 'Linux Launch Builder')), 10);
         });
       }
 

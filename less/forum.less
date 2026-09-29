@@ -1,5 +1,5 @@
 // Linux Games Commands - Forum Styles
-// Átlátható, modern kártya- és modulrendszer
+// Átlátható, modern kártya- és panelrendszer
 
 // 1. Gombok a felületen (Hero, Sidebar, Toolbar)
 .LinuxGamesCommands-sidebar-btn {
@@ -36,11 +36,11 @@
 .LinuxGamesCommandsModal {
   max-width: 880px;
   width: 95%;
-  margin: 15px auto;
+  margin: 18px auto;
   box-sizing: border-box;
 
   .Modal-content {
-    padding: 18px 20px;
+    padding: 20px 22px;
     background: #0d1117;
     color: #c9d1d9;
     border: 1px solid #30363d;
@@ -62,11 +62,11 @@
 
   .Modal-header {
     border-bottom: 1px solid #21262d;
-    padding-bottom: 12px;
-    margin-bottom: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
 
     h3 {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 700;
       color: #f0f6fc;
       display: flex;
@@ -81,30 +81,54 @@
     }
   }
 
-  // Gyors sablon sáv
-  .lgc-presets-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 14px;
-    padding: 8px 12px;
+  // Általános panel konténer
+  .lgc-panel {
     background: #161b22;
     border: 1px solid #30363d;
-    border-radius: 8px;
+    border-radius: 10px;
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
 
-    .lgc-presets-title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #8b949e;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      display: flex;
+  // 1. Gyors sablon panel
+  .lgc-presets-panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+
+    .lgc-presets-header {
+      display: inline-flex;
       align-items: center;
+      gap: 6px;
       flex-shrink: 0;
+
+      .presets-header-icon {
+        color: #58a6ff;
+        font-size: 0.85rem;
+      }
+
+      .lgc-presets-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #8b949e;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .lgc-presets-list {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
     }
 
     .lgc-preset-pill {
@@ -136,53 +160,63 @@
     }
   }
 
-  // Fül navigáció
-  .lgc-tabs-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    border-bottom: 1px solid #21262d;
-    margin-bottom: 14px;
-    padding-bottom: 8px;
-    box-sizing: border-box;
-    width: 100%;
-    max-width: 100%;
+  // 2. Fülek panel (Tabs panel)
+  .lgc-tabs-panel {
+    padding: 8px 10px;
+    margin-bottom: 18px;
 
-    .lgc-tab-btn {
-      background: transparent;
-      border: 1px solid transparent;
-      color: #8b949e;
-      font-weight: 600;
-      font-size: 0.85rem;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      transition: all 0.2s ease;
-      white-space: nowrap;
+    .lgc-tabs-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      border: none;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
 
-      &:hover {
-        color: #f0f6fc;
-        background: #161b22;
-        border-color: #21262d;
-      }
+      .lgc-tab-btn {
+        background: #0d1117;
+        border: 1px solid #282e36;
+        color: #8b949e;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 8px 14px;
+        border-radius: 7px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.2s ease;
+        white-space: nowrap;
 
-      &.active {
-        color: #58a6ff;
-        background: rgba(56, 139, 253, 0.12);
-        border-color: rgba(56, 139, 253, 0.35);
+        &:hover {
+          color: #f0f6fc;
+          background: #21262d;
+          border-color: #388bfd55;
+        }
+
+        &.active {
+          color: #ffffff;
+          background: #1f6feb;
+          border-color: #388bfd;
+          box-shadow: 0 2px 10px rgba(31, 111, 235, 0.4);
+
+          i {
+            color: #ffffff !important;
+          }
+        }
       }
     }
   }
 
-  // Fül tartalmak görgetése (szigorúan tiltva a vízszintes görgetés)
+  // 3. Fül tartalmak görgetése (szigorúan tiltva a vízszintes görgetés)
   .lgc-tab-content {
     max-height: 460px;
     overflow-y: auto;
     overflow-x: hidden !important;
     padding-right: 4px;
-    margin-bottom: 14px;
+    margin-bottom: 18px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -201,26 +235,35 @@
     background: #161b22;
     border: 1px solid #282e36;
     border-radius: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     overflow: hidden;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 
     &:hover {
-      border-color: #388bfd44;
+      border-color: #388bfd55;
     }
 
     .lgc-card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      padding: 10px 14px;
+      gap: 10px;
+      padding: 12px 16px;
       background: rgba(255, 255, 255, 0.02);
       border-bottom: 1px solid #21262d;
       box-sizing: border-box;
+
+      .lgc-card-title-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        flex: 1;
+      }
 
       .header-icon {
         font-size: 0.95rem;
@@ -234,7 +277,7 @@
       }
 
       .header-title {
-        font-size: 0.88rem;
+        font-size: 0.9rem;
         font-weight: 600;
         color: #f0f6fc;
         flex: 1;
@@ -243,19 +286,19 @@
     }
 
     .lgc-card-body {
-      padding: 12px 14px;
+      padding: 14px 16px;
       box-sizing: border-box;
       width: 100%;
       max-width: 100%;
     }
   }
 
-  // Kártya stílusú jelölőnégyzet kapcsolók (Toggle Cards)
+  // Kártya stílusú kapcsolók (Toggle Cards)
   .lgc-toggle-card {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    padding: 10px 12px;
+    gap: 12px;
+    padding: 11px 14px;
     background: #0d1117;
     border: 1px solid #21262d;
     border-radius: 8px;
@@ -263,7 +306,7 @@
     transition: all 0.2s ease;
     box-sizing: border-box;
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 
     &:last-child {
       margin-bottom: 0;
@@ -379,7 +422,7 @@
       width: 100%;
       background: transparent;
       border: none;
-      padding: 11px 14px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -402,7 +445,7 @@
         flex: 1;
 
         .header-title {
-          font-size: 0.88rem;
+          font-size: 0.9rem;
           font-weight: 600;
           color: #f0f6fc;
         }
@@ -424,7 +467,7 @@
     .accordion-body {
       border-top: 1px solid #21262d;
       background: rgba(0, 0, 0, 0.15);
-      padding: 12px 14px;
+      padding: 14px 16px;
       box-sizing: border-box;
     }
   }
@@ -433,7 +476,7 @@
   .lgc-grid-2 {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -446,7 +489,7 @@
   .lgc-grid-3 {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -485,7 +528,7 @@
       grid-template-columns: 1fr;
     }
 
-    .lgc-presets-bar {
+    .lgc-presets-panel {
       flex-direction: column;
       align-items: flex-start;
     }
@@ -508,14 +551,14 @@
   .lgc-field {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     width: 100%;
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
 
     label {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 500;
       color: #8b949e;
       white-space: normal;
@@ -528,7 +571,7 @@
       background: #0d1117;
       border: 1px solid #30363d;
       color: #f0f6fc;
-      padding: 6px 10px;
+      padding: 7px 10px;
       border-radius: 6px;
       font-size: 0.85rem;
       width: 100%;
@@ -557,10 +600,10 @@
     justify-content: space-between;
     gap: 10px;
     flex-wrap: wrap;
-    padding: 8px 12px;
+    padding: 9px 12px;
     border-radius: 6px;
     background: #0d1117;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     border: 1px solid #21262d;
     width: 100%;
     max-width: 100%;
@@ -633,13 +676,13 @@
     justify-content: space-between;
     gap: 8px;
     flex-wrap: wrap;
-    margin-top: 8px;
+    margin-top: 10px;
     width: 100%;
     box-sizing: border-box;
 
     .lgc-pipeline-step {
       flex: 1 1 140px;
-      padding: 10px;
+      padding: 12px 10px;
       background: #0d1117;
       border: 1px solid #21262d;
       border-radius: 8px;
@@ -706,16 +749,19 @@
   .lgc-output-container {
     background: #05070a;
     border: 1px solid #30363d;
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-top: 14px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 18px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
 
     .lgc-output-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
 
       .lgc-output-title-group {
         display: flex;
@@ -764,12 +810,12 @@
       background: #090c10;
       border: 1px solid #21262d;
       border-radius: 6px;
-      padding: 10px 14px;
+      padding: 12px 14px;
       white-space: pre-wrap;
       word-break: break-all;
       overflow-wrap: anywhere;
       user-select: text;
-      margin: 0 0 12px 0;
+      margin: 0 0 14px 0;
       min-height: 42px;
       width: 100%;
       max-width: 100%;
@@ -836,7 +882,7 @@
   }
 }
 
-// 3. Fórum hozzászólásban megjelenő terminál kártya ([linux-command])
+// 4. Fórum hozzászólásban megjelenő terminál kártya ([linux-command])
 .linux-command-container {
   background: #0d1117;
   border: 1px solid #30363d;
