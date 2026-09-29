@@ -18,9 +18,9 @@ gabeszm-linux-games-commands:
     modal_title: "🎮 Steam & Linux Launch Option Builder"
     modal_subtitle: "Combine Gamescope, Proton and Wine DLL overrides into a single clean launch command."
     copy: "Copy"
-    copied: "Copied! ✓"
     insert_to_post: "Insert into post"
     clear: "Clear All"
+    inserted_alert: "Command successfully inserted into post!"
     tabs:
       quick: "⚡ Quick Tools"
       gamescope: "📺 Gamescope"

@@ -359,15 +359,57 @@
     insertToPost() {
       const cmd = this.buildCommand();
       const bbcode = `[linux-command]${cmd}[/linux-command]`;
+      let inserted = false;
 
+      // 1. Ha a szerkesztőből közvetlenül hívták meg
       if (this.attrs.editor) {
         if (typeof this.attrs.editor.insertAtCursor === 'function') {
           this.attrs.editor.insertAtCursor(bbcode);
+          inserted = true;
         } else if (this.attrs.editor.attrs && this.attrs.editor.attrs.composer && this.attrs.editor.attrs.composer.editor) {
           this.attrs.editor.attrs.composer.editor.insertAtCursor(bbcode);
+          inserted = true;
         }
       }
-      navigator.clipboard.writeText(bbcode);
+
+      // 2. Ha a globális composer nyitva van
+      if (!inserted && app && app.composer) {
+        if (app.composer.editor && typeof app.composer.editor.insertAtCursor === 'function') {
+          app.composer.editor.insertAtCursor(bbcode);
+          inserted = true;
+        } else if (app.composer.fields && typeof app.composer.fields.content === 'function') {
+          const current = app.composer.fields.content() || '';
+          app.composer.fields.content(current ? current + '\n\n' + bbcode : bbcode);
+          inserted = true;
+        }
+      }
+
+      // 3. Ha a composer még nincs megnyitva, de van téma kontextus
+      if (!inserted && app && app.composer) {
+        const discussion = this.attrs.discussion || (app.current ? app.current.get('discussion') : null);
+        const DiscussionControls = resolve('core', 'forum/utils/DiscussionControls');
+        if (discussion && DiscussionControls && typeof DiscussionControls.replyAction === 'function') {
+          DiscussionControls.replyAction.call(discussion).then(() => {
+            setTimeout(() => {
+              if (app.composer && app.composer.editor && typeof app.composer.editor.insertAtCursor === 'function') {
+                app.composer.editor.insertAtCursor(bbcode);
+              }
+            }, 300);
+          }).catch(() => {});
+          inserted = true;
+        }
+      }
+
+      // Másolás vágólapra is a biztonság kedvéért
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(bbcode).catch(() => {});
+      }
+
+      if (app && app.alerts && inserted) {
+        const alertMsg = (app.translator ? app.translator.trans('gabeszm-linux-games-commands.forum.inserted_alert') : null) || 'Parancs sikeresen beillesztve a bejegyzésbe!';
+        app.alerts.show({ type: 'success' }, alertMsg);
+      }
+
       if (app && app.modal) {
         app.modal.close();
       }
@@ -406,10 +448,9 @@
       ]);
     }
 
-    // Kimeneti parancsdoboz renderelése
+    // Kimeneti parancsdoboz renderelése (kizárólag postba illesztés és minden törlése gombokkal)
     renderOutputBox() {
       const cmd = this.buildCommand();
-      const isCopied = this.copyStatus === 'copied';
       const t = (k, def) => (app && app.translator ? app.translator.trans(k) : def);
 
       return m('.lgc-output-container', [
@@ -417,32 +458,26 @@
           m('.lgc-output-title-group', [
             m('.terminal-dots', [m('span'), m('span'), m('span')]),
             m('.lgc-output-label', t('gabeszm-linux-games-commands.forum.output_label', 'GENERÁLT STEAM INDÍTÁSI PARANCS:'))
-          ]),
-          isCopied ? m('.lgc-output-status', '✓ ' + t('gabeszm-linux-games-commands.forum.copied', 'Másolva! ✓')) : null
+          ])
         ]),
         m('pre.lgc-output-code', cmd),
         m('.lgc-actions-bar', [
           m('.lgc-actions-left', [
-            m('button.btn-copy', {
-              type: 'button',
-              className: isCopied ? 'copied' : '',
-              onclick: () => this.copyCommand()
-            }, [
-              m('i.fas', { className: isCopied ? 'fa-check' : 'fa-copy' }),
-              ' ' + (isCopied ? t('gabeszm-linux-games-commands.forum.copied', 'Másolva! ✓') : t('gabeszm-linux-games-commands.forum.copy', 'Másolás'))
-            ]),
-            this.attrs.editor ? m('button.btn-insert', {
+            m('button.btn-insert', {
               type: 'button',
               onclick: () => this.insertToPost()
             }, [
               m('i.fas.fa-pen-to-square'),
               ' ' + t('gabeszm-linux-games-commands.forum.insert_to_post', 'Beillesztés a hozzászólásba')
-            ]) : null
+            ])
           ]),
           m('button.btn-clear', {
             type: 'button',
             onclick: () => this.clearAll()
-          }, t('gabeszm-linux-games-commands.forum.clear', 'Ürítés'))
+          }, [
+            m('i.fas.fa-trash-alt', { style: 'margin-right: 6px;' }),
+            t('gabeszm-linux-games-commands.forum.clear', 'Minden törlése')
+          ])
         ])
       ]);
     }
