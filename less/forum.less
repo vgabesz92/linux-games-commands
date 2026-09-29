@@ -1,34 +1,57 @@
 // Linux Games Commands - Forum Styles
 // Átlátható, modern kártya- és panelrendszer
 
-// 1. Gombok a felületen (Hero, Sidebar, Toolbar)
-.LinuxGamesCommands-sidebar-btn {
-  width: 100%;
-  margin-bottom: 12px;
-  background: linear-gradient(135deg, #1f6feb 0%, #1158c7 100%);
-  border: 1px solid #388bfd;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(31, 111, 235, 0.25);
-  transition: all 0.2s ease;
+// 1. Kiemelt gomb a hozzászólás / válasz eszköztárban a BB kódok között
+.Button-linux-games-commands-highlighted {
+  background: linear-gradient(135deg, #1f6feb 0%, #1158c7 100%) !important;
+  border: 1px solid #388bfd !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  box-shadow: 0 2px 8px rgba(31, 111, 235, 0.4) !important;
+  transition: all 0.2s ease !important;
+  margin: 0 4px !important;
+  cursor: pointer !important;
+  vertical-align: middle !important;
+  height: auto !important;
+  line-height: normal !important;
 
-  &:hover {
-    background: linear-gradient(135deg, #388bfd 0%, #1f6feb 100%);
-    box-shadow: 0 4px 16px rgba(56, 139, 253, 0.4);
-    transform: translateY(-1px);
+  i {
+    color: #ffffff !important;
+    font-size: 0.88rem !important;
+    vertical-align: middle !important;
   }
-}
 
-.LinuxGamesCommands-hero-btn {
-  margin-left: 8px;
-  font-weight: 600;
-  color: #58a6ff;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  .btn-label {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.3px !important;
+  }
 
   &:hover {
-    color: #79c0ff;
-    text-decoration: underline;
+    background: linear-gradient(135deg, #388bfd 0%, #1f6feb 100%) !important;
+    box-shadow: 0 0 14px rgba(56, 139, 253, 0.7) !important;
+    border-color: #79c0ff !important;
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 4px rgba(31, 111, 235, 0.4) !important;
+  }
+
+  @media (max-width: 600px) {
+    padding: 5px 8px !important;
+
+    .btn-label {
+      display: none !important;
+    }
   }
 }
 

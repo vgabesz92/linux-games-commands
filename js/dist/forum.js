@@ -1662,7 +1662,7 @@
     app.initializers.add('gabeszm-linux-games-commands', () => {
       console.log('[Linux Games Commands] Extension initialized successfully');
 
-      // 1. TextEditor (Hozzászólás- és témakészítő eszköztár)
+      // 1. TextEditor eszköztár (Kizárólag a hozzászólás / válasz szerkesztőben a BB kódok között, kiemelt stílussal)
       if (extend && TextEditor && TextEditor.prototype) {
         extend(TextEditor.prototype, 'toolbarItems', function (items) {
           if (app.forum && app.forum.attribute('linuxGamesShowInComposer') === false) return;
@@ -1671,8 +1671,7 @@
           if (discussion && !isAllowedForDiscussion(discussion)) return;
 
           items.add('linux-games-commands', m(Button, {
-            icon: 'fas fa-gamepad',
-            className: 'Button Button--icon Button--link Button-linux-games-commands',
+            className: 'Button Button-linux-games-commands-highlighted',
             title: safeTrans('gabeszm-linux-games-commands.forum.toolbar_tooltip', 'Steam & Linux Indítási Parancskészítő'),
             onclick: () => {
               if (app.modal) {
@@ -1682,66 +1681,10 @@
                 });
               }
             }
-          }), 20);
-        });
-      }
-
-      // 2. DiscussionPage Sidebar (Téma oldalsáv)
-      if (extend && DiscussionPage && DiscussionPage.prototype) {
-        extend(DiscussionPage.prototype, 'sidebarItems', function (items) {
-          if (app.forum && app.forum.attribute('linuxGamesShowInDiscussion') === false) return;
-
-          const discussion = this.discussion || (app.current ? app.current.get('discussion') : null);
-          if (!isAllowedForDiscussion(discussion)) return;
-
-          items.add('linux-games-commands-sidebar', m(Button, {
-            className: 'Button Button--primary LinuxGamesCommands-sidebar-btn',
-            icon: 'fas fa-gamepad',
-            onclick: () => {
-              if (app.modal) {
-                app.modal.show(LinuxGamesCommandsModal, {
-                  discussion: discussion
-                });
-              }
-            }
-          }, safeTrans('gabeszm-linux-games-commands.forum.sidebar_button', 'Linux Launch Builder')), 60);
-        });
-      }
-
-      // 3. DiscussionHero (Téma fejléc gomb)
-      if (extend && DiscussionHero && DiscussionHero.prototype) {
-        extend(DiscussionHero.prototype, 'items', function (items) {
-          if (app.forum && app.forum.attribute('linuxGamesShowInDiscussion') === false) return;
-
-          const discussion = this.attrs ? this.attrs.discussion : null;
-          if (!isAllowedForDiscussion(discussion)) return;
-
-          items.add('linux-games-commands-hero', m(Button, {
-            className: 'Button Button--link LinuxGamesCommands-hero-btn',
-            icon: 'fas fa-gamepad',
-            onclick: () => {
-              if (app.modal) {
-                app.modal.show(LinuxGamesCommandsModal, {
-                  discussion: discussion
-                });
-              }
-            }
-          }, safeTrans('gabeszm-linux-games-commands.forum.hero_button', 'Indítási Opciók')), 10);
-        });
-      }
-
-      // 4. IndexSidebar (Főoldali és kategória oldalsáv gomb)
-      if (extend && IndexSidebar && IndexSidebar.prototype) {
-        extend(IndexSidebar.prototype, 'items', function (items) {
-          items.add('linux-games-commands-index-sidebar', m(Button, {
-            className: 'Button Button--primary LinuxGamesCommands-sidebar-btn',
-            icon: 'fas fa-gamepad',
-            onclick: () => {
-              if (app.modal) {
-                app.modal.show(LinuxGamesCommandsModal, {});
-              }
-            }
-          }, safeTrans('gabeszm-linux-games-commands.forum.sidebar_button', 'Linux Launch Builder')), 10);
+          }, [
+            m('i.fas.fa-gamepad'),
+            m('span.btn-label', safeTrans('gabeszm-linux-games-commands.forum.toolbar_btn_label', 'Linux Parancs'))
+          ]), 20);
         });
       }
 

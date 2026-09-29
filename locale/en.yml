@@ -9,10 +9,11 @@ gabeszm-linux-games-commands:
       show_in_discussion: "Show button on discussion page"
       show_in_discussion_help: "Displays a 'Linux Launch Builder' button on discussions in allowed categories."
       show_in_composer: "Show button in post editor toolbar"
-      show_in_composer_help: "Adds a gamepad icon to the composer toolbar to insert commands into posts."
+      show_in_composer_help: "Adds a highlighted button to the composer toolbar to insert commands into posts."
   forum:
     title: "Linux Games Commands"
     toolbar_tooltip: "Steam & Linux Launch Option Builder"
+    toolbar_btn_label: "Linux Command"
     sidebar_button: "Linux Launch Builder"
     hero_button: "Launch Options"
     modal_title: "Steam & Linux Launch Option Builder"

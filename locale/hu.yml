@@ -9,10 +9,11 @@ gabeszm-linux-games-commands:
       show_in_discussion: "Megjelenítés a téma (Discussion) oldalon"
       show_in_discussion_help: "Megjeleníti a 'Linux Launch Builder' gombot a témák oldalsávjában és fejlécében az engedélyezett kategóriákban."
       show_in_composer: "Megjelenítés a hozzászólás szerkesztő eszköztárában"
-      show_in_composer_help: "Megjelenít egy kontroller ikont az editor fejlécében, amellyel a generált parancs azonnal beilleszthető a hozzászólásba."
+      show_in_composer_help: "Megjelenít egy kiemelt gombot az editor eszköztárában, amellyel a generált parancs beilleszthető a hozzászólásba."
   forum:
     title: "Linux Games Commands"
     toolbar_tooltip: "Steam & Linux Indítási Parancskészítő"
+    toolbar_btn_label: "Linux Parancs"
     sidebar_button: "Linux Launch Builder"
     hero_button: "Indítási Opciók"
     modal_title: "Steam & Linux Játék Indítási Parancskészítő"
