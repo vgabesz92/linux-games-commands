@@ -216,6 +216,15 @@
 
       // Parancs és futtatás
       this.gameCommand = '%command%';
+
+      // Célplatformok / Indítók (Checkboxes)
+      this.targets = {
+        steam: true,
+        heroic: false,
+        lutris: false,
+        bottles: false,
+        terminal: false
+      };
     }
 
     // Sablon alkalmazása
@@ -342,6 +351,24 @@
       this.customDllName = '';
       this.gameCommand = '%command%';
       this.copyStatus = '';
+      this.targets = {
+        steam: true,
+        heroic: false,
+        lutris: false,
+        bottles: false,
+        terminal: false
+      };
+      m.redraw();
+    }
+
+    // Célplatform átkapcsolása (legalább egynek mindig aktívnak kell maradnia)
+    toggleTarget(key) {
+      const activeKeys = Object.keys(this.targets).filter(k => this.targets[k]);
+      if (this.targets[key] && activeKeys.length <= 1) {
+        m.redraw();
+        return;
+      }
+      this.targets[key] = !this.targets[key];
       m.redraw();
     }
 
@@ -389,15 +416,13 @@
       m.redraw();
     }
 
-    // Parancs összeállítása a logikus sorrendben
-    buildCommand() {
-      const parts = [];
+    // Parancs összeállítása egy adott célplatformra
+    buildCommandForTarget(target) {
+      const wrappers = [];
+      if (this.useGamemode) wrappers.push('gamemoderun');
+      if (this.useMangohud) wrappers.push('mangohud');
 
-      // 1. Wrapperek
-      if (this.useGamemode) parts.push('gamemoderun');
-      if (this.useMangohud) parts.push('mangohud');
-
-      // 2. Gamescope kompozitor
+      let gsStr = '';
       if (this.enableGamescope) {
         const gsArgs = [];
         if (this.gsGameW) gsArgs.push('-w', this.gsGameW);
@@ -428,14 +453,10 @@
         if (this.gsExtraArgs && this.gsExtraArgs.trim()) {
           gsArgs.push(this.gsExtraArgs.trim());
         }
-
-        parts.push('gamescope ' + gsArgs.join(' ') + ' --');
+        gsStr = 'gamescope ' + gsArgs.join(' ') + ' --';
       }
 
-      // 3. Környezeti változók (DLL overrides + Proton)
       const envVars = [];
-
-      // WINEDLLOVERRIDES
       if (this.enableDll) {
         const overrides = [];
         this.predefinedDlls.forEach(dll => {
@@ -449,16 +470,12 @@
         }
       }
 
-      // PROTON & Grafikai változók
       if (this.enableProton) {
-        // Alap & Naplózás
         if (this.prLog) envVars.push('PROTON_LOG=1');
         if (this.prLogDir && this.prLogDir.trim()) envVars.push(`PROTON_LOG_DIR="${this.prLogDir.trim()}"`);
         if (this.prWinedebug) envVars.push(`WINEDEBUG="${this.prWinedebug}"`);
         if (this.prDxvkHud && this.prDxvkHud.trim()) envVars.push(`DXVK_HUD="${this.prDxvkHud.trim()}"`);
         if (this.prDxvkFrameRate) envVars.push(`DXVK_FRAME_RATE=${this.prDxvkFrameRate}`);
-
-        // DXVK & VKD3D Haladó
         if (this.prVkd3dConfig && this.prVkd3dConfig.trim()) envVars.push(`VKD3D_CONFIG="${this.prVkd3dConfig.trim()}"`);
         if (this.prVkd3dDebug) envVars.push(`VKD3D_DEBUG=${this.prVkd3dDebug}`);
         if (this.prVkd3dFeatureLevel) envVars.push(`VKD3D_FEATURE_LEVEL=${this.prVkd3dFeatureLevel}`);
@@ -467,8 +484,6 @@
         if (this.prNoD3d11) envVars.push('PROTON_NO_D3D11=1');
         if (this.prNoD3d12) envVars.push('PROTON_NO_D3D12=1');
         if (this.prDxvkNoStateCache) envVars.push('DXVK_STATE_CACHE=0');
-
-        // Rendszer & Szinkronizáció
         if (this.prMesaVkDeviceSelect && this.prMesaVkDeviceSelect.trim()) envVars.push(`MESA_VK_DEVICE_SELECT="${this.prMesaVkDeviceSelect.trim()}"`);
         if (this.prNoEsync) envVars.push('PROTON_NO_ESYNC=1');
         if (this.prNoFsync) envVars.push('PROTON_NO_FSYNC=1');
@@ -477,8 +492,6 @@
         if (this.prHeapDelayFree) envVars.push('WINE_HEAP_DELAY_FREE=1');
         if (this.prUseWined3d) envVars.push('PROTON_USE_WINED3D=1');
         if (this.prWineprefix && this.prWineprefix.trim()) envVars.push(`WINEPREFIX="${this.prWineprefix.trim()}"`);
-
-        // GPU & Integrációk
         if (this.prNvapi) envVars.push('PROTON_ENABLE_NVAPI=1');
         if (this.prDlssUpgrade) envVars.push('PROTON_DLSS_UPGRADE=1');
         if (this.prHideNvidiaGpu) envVars.push('PROTON_HIDE_NVIDIA_GPU=1');
@@ -486,18 +499,89 @@
         if (this.prWayland) envVars.push('PROTON_ENABLE_WAYLAND=1');
         if (this.prVkbasalt) envVars.push('ENABLE_VKBASALT=1');
         if (this.prDumpDebugCommands) envVars.push('PROTON_DUMP_DEBUG_COMMANDS=1');
-
         if (this.prExtraArgs && this.prExtraArgs.trim()) envVars.push(this.prExtraArgs.trim());
       }
 
-      if (envVars.length > 0) {
-        parts.push(envVars.join(' '));
+      const customCmd = (this.gameCommand || '').trim();
+
+      if (target === 'steam') {
+        const parts = [];
+        if (wrappers.length > 0) parts.push(wrappers.join(' '));
+        if (gsStr) parts.push(gsStr);
+        if (envVars.length > 0) parts.push(envVars.join(' '));
+        parts.push(customCmd || '%command%');
+        return parts.join(' ').trim();
       }
 
-      // 4. Játék indítási parancs
-      parts.push(this.gameCommand.trim() || '%command%');
+      if (target === 'heroic' || target === 'lutris' || target === 'bottles') {
+        const parts = [];
+        if (wrappers.length > 0) parts.push(wrappers.join(' '));
+        if (gsStr) {
+          parts.push(gsStr);
+          if (envVars.length > 0) parts.push('env ' + envVars.join(' '));
+        } else {
+          if (envVars.length > 0) {
+            if (wrappers.length > 0) parts.push('env ' + envVars.join(' '));
+            else parts.push(envVars.join(' '));
+          }
+        }
+        if (customCmd && customCmd !== '%command%') {
+          parts.push(customCmd);
+        }
+        const res = parts.join(' ').trim();
+        return res || '# (Nincs megadva extra indítási opció)';
+      }
 
-      return parts.join(' ').trim();
+      if (target === 'terminal') {
+        const parts = [];
+        if (wrappers.length > 0) parts.push(wrappers.join(' '));
+        if (gsStr) {
+          parts.push(gsStr);
+          if (envVars.length > 0) parts.push('env ' + envVars.join(' '));
+        } else {
+          if (envVars.length > 0) parts.push(envVars.join(' '));
+        }
+        if (customCmd && customCmd !== '%command%') {
+          parts.push(customCmd);
+        } else {
+          parts.push('./game.exe');
+        }
+        return parts.join(' ').trim();
+      }
+
+      return customCmd || '%command%';
+    }
+
+    // Parancs összeállítása a kiválasztott célplatformok alapján
+    buildCommand() {
+      const activeKeys = Object.keys(this.targets).filter(k => this.targets[k]);
+      if (activeKeys.length === 0) activeKeys.push('steam');
+
+      if (activeKeys.length === 1) {
+        return this.buildCommandForTarget(activeKeys[0]);
+      }
+
+      const targetMeta = {
+        steam: 'STEAM (Indítási opciók: Tulajdonságok -> Általános)',
+        heroic: 'HEROIC GAMES LAUNCHER (Játékbeállítások -> Haladó -> Wrapper parancs)',
+        lutris: 'LUTRIS (Konfiguráció -> Rendszerbeállítások -> Parancs előtag / Prefix)',
+        bottles: 'BOTTLES (Palack beállítások -> Indítási argumentumok)',
+        terminal: 'TERMINÁL / BASH (Közvetlen parancssori futtatás)'
+      };
+
+      const blocks = [];
+      activeKeys.forEach(key => {
+        const title = targetMeta[key] || key.toUpperCase();
+        const cmd = this.buildCommandForTarget(key);
+        blocks.push(
+          `# ========================================================\n` +
+          `# ${title}\n` +
+          `# ========================================================\n` +
+          `${cmd}`
+        );
+      });
+
+      return blocks.join('\n\n');
     }
 
     // Beillesztés a hozzászólásba
@@ -637,19 +721,61 @@
       ]);
     }
 
+    // Célplatform választó sáv (Checkboxes)
+    renderLaunchersBar() {
+      const LAUNCHERS = [
+        { key: 'steam', name: 'Steam', icon: 'fab fa-steam', badge: '%command%' },
+        { key: 'heroic', name: 'Heroic', icon: 'fas fa-rocket', badge: 'Wrapper' },
+        { key: 'lutris', name: 'Lutris', icon: 'fas fa-dragon', badge: 'Prefix' },
+        { key: 'bottles', name: 'Bottles', icon: 'fas fa-wine-bottle', badge: 'Args' },
+        { key: 'terminal', name: 'Terminál', icon: 'fas fa-terminal', badge: 'Bash' }
+      ];
+
+      return m('.lgc-panel.lgc-launchers-panel', [
+        m('.lgc-launchers-header', [
+          m('i.fas.fa-bullseye.launchers-header-icon'),
+          m('span.lgc-launchers-title', safeTrans('gabeszm-linux-games-commands.forum.target_launchers_title', 'Célplatform / Indító:')),
+          m('span.lgc-launchers-hint', safeTrans('gabeszm-linux-games-commands.forum.target_launchers_hint', '(Válaszd ki, mely indítókhoz készüljön a parancs)'))
+        ]),
+        m('.lgc-launchers-list', LAUNCHERS.map(item => {
+          const isChecked = !!this.targets[item.key];
+          return m('label.lgc-launcher-checkbox-pill', {
+            className: isChecked ? 'active' : ''
+          }, [
+            m('input[type=checkbox]', {
+              checked: isChecked,
+              onchange: () => this.toggleTarget(item.key)
+            }),
+            m('i.' + item.icon, { style: 'margin: 0 4px;' }),
+            m('span.launcher-name', item.name),
+            m('span.launcher-badge', item.badge)
+          ]);
+        }))
+      ]);
+    }
+
     // Kimeneti parancsdoboz renderelése (szigorúan 2 gombbal: beillesztés és törlés)
     renderOutputBox() {
       const cmd = this.buildCommand();
+      const activeKeys = Object.keys(this.targets).filter(k => this.targets[k]);
+      let badgeText = 'STEAM';
+      if (activeKeys.length === 1) {
+        badgeText = activeKeys[0].toUpperCase();
+      } else if (activeKeys.length === 2) {
+        badgeText = `${activeKeys[0].toUpperCase()} + ${activeKeys[1].toUpperCase()}`;
+      } else if (activeKeys.length > 2) {
+        badgeText = `TÖBB INDÍTÓ (${activeKeys.length})`;
+      }
 
       return m('.lgc-output-container', [
         m('.lgc-output-header', [
           m('.lgc-output-title-group', [
             m('.terminal-dots', [m('span'), m('span'), m('span')]),
-            m('.lgc-output-label', safeTrans('gabeszm-linux-games-commands.forum.output_label', 'GENERÁLT STEAM INDÍTÁSI PARANCS:'))
+            m('.lgc-output-label', safeTrans('gabeszm-linux-games-commands.forum.output_label', 'GENERÁLT INDÍTÁSI PARANCS:'))
           ]),
           m('.lgc-output-badge', [
             m('i.fas.fa-terminal', { style: 'margin-right: 4px;' }),
-            'BASH / STEAM'
+            badgeText
           ])
         ]),
         m('pre.lgc-output-code', cmd),
@@ -686,6 +812,7 @@
           this.activeTab === 'dll' ? this.tabDll() : null,
           this.activeTab === 'order' ? this.tabOrder() : null
         ]),
+        this.renderLaunchersBar(),
         this.renderOutputBox()
       ]);
     }
@@ -1624,7 +1751,7 @@
               m('.lgc-pipeline-connector', m('i.fas.fa-arrow-right')),
               m('.lgc-pipeline-step.active', [
                 m('.step-badge', '4'),
-                m('.step-title', 'Játék / Steam'),
+                m('.step-title', 'Játék / Indító'),
                 m('.step-desc', this.gameCommand || '%command%')
               ])
             ])
@@ -1634,19 +1761,19 @@
         m('.lgc-card', [
           m('.lgc-card-header', [
             m('i.fas.fa-terminal.header-icon.emerald'),
-            m('span.header-title', 'Futtatási Cél / Steam Változó'),
+            m('span.header-title', 'Futtatási Cél / Indító Változó'),
             m('span.lgc-badge.badge-emerald', 'Parancs')
           ]),
           m('.lgc-card-body', [
             m('.lgc-field', [
-              m('label', 'Futtatandó parancs vagy Steam helyettesítő:'),
+              m('label', 'Futtatandó parancs vagy Steam helyettesítő (%command%):'),
               m('input[type=text]', {
                 value: this.gameCommand,
                 oninput: e => { this.gameCommand = e.target.value; },
                 placeholder: '%command%'
               }),
               m('small', { style: 'color: #8b949e; font-size: 0.75rem; margin-top: 4px;' },
-                'Steam indítási opciók esetén a %command% jelöli a játék eredeti végrehajtható fájlját.'
+                'Steam esetén a %command% jelöli a játék fájlját. Heroic, Lutris és Bottles esetén ez automatikusan elhagyásra kerül, Terminálnál pedig ./game.exe-re cserélődik.'
               )
             ])
           ])

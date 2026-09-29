@@ -22,6 +22,8 @@ gabeszm-linux-games-commands:
     insert_to_post: "Beillesztés a hozzászólásba"
     clear: "Minden törlése"
     inserted_alert: "Parancs sikeresen beillesztve a bejegyzésbe!"
+    target_launchers_title: "Célplatform / Indító:"
+    target_launchers_hint: "(Válaszd ki, mely indítókhoz készüljön a parancs)"
     tabs:
       quick: "Gyors eszközök"
       gamescope: "Gamescope"
@@ -35,6 +37,6 @@ gabeszm-linux-games-commands:
       modding: "Modding / ReShade"
       nvidia: "Nvidia RTX & DLSS"
       debug: "Hibakeresés (Log)"
-    output_label: "GENERÁLT STEAM INDÍTÁSI PARANCS:"
+    output_label: "GENERÁLT INDÍTÁSI PARANCS:"
     add_custom_dll: "+ Egyedi DLL hozzáadása"
     dll_name_placeholder: "DLL neve (pl. version vagy dxgi)"
