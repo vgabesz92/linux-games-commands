@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proton Indítási Opciók Készítő</title>
+  <meta name="description" content="Konfiguráld a Steam Proton környezeti változóit, DXVK/VKD3D beállításait, és generálj egyedi indítási parancsokat.">
+  
+  <!-- Prémium sans-serif és mono betűtípusok betöltése -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css?v=1.2">
+</head>
+<body data-page="proton">
+
+  <!-- Akadálymentes ugró link -->
+  <a href="#command-output-section" class="skip-link">Ugrás a kimenetre</a>
+
+  <main>
+    <header>
+      <h1>Proton Indítási Opciók Készítő</h1>
+      <p>Konfiguráld a Steam Proton környezeti változóit, DXVK/VKD3D beállításait, és generálj egyedi indítási parancsokat.</p>
+      <div style="margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.75rem;">
+        <a href="main.html" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.25rem; vertical-align: middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Átváltás a Fő Parancskészítőre (Suite)
+        </a>
+        <a href="gamescope_builder_hu.html" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.25rem; vertical-align: middle;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          Átváltás a Gamescope Parancskészítőre
+        </a>
+        <a href="winedlloverrides_builder_hu.html" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.25rem; vertical-align: middle;"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+          Átváltás a DLL Felülbírálás Készítőre
+        </a>
+      </div>
+    </header>
+
+    <div class="dashboard">
+      <!-- BAL OLDALI OSZLOP: PARAMÉTEREK -->
+      <section class="card" aria-labelledby="parameters-title">
+        <div class="panel-header">
+          <h2 id="parameters-title">Beállítások <span id="active-preset-indicator" class="subtitle"></span></h2>
+          <button class="btn btn-danger" id="clear-btn" type="button" title="Minden beviteli mező visszaállítása az alapértelmezettre">Ürítés</button>
+        </div>
+
+        <form id="builder-form" onsubmit="event.preventDefault();">
+          
+          <!-- ALAPVETŐ ÉS NAPLÓZÁSI BEÁLLÍTÁSOK -->
+          <div class="section-title">Alapvető és Naplózási Beállítások</div>
+
+          <div class="checkbox-grid" style="margin-bottom: 1.25rem;">
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-proton-log">
+              <span>Hibakeresési naplófájl generálása (PROTON_LOG=1)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-log">?</span>
+                <span id="desc-log" role="tooltip" class="help-tip__content">Létrehoz egy hibakeresési naplófájlt a felhasználói könyvtárban steam-APPID.log néven.</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="proton-log-dir">Naplók mentési mappája (PROTON_LOG_DIR)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-log-dir">?</span>
+                  <span id="desc-log-dir" role="tooltip" class="help-tip__content">Egyedi könyvtárat ad meg a Proton naplók elmentéséhez. Alapértelmezésben a saját mappa ($HOME).</span>
+                </div>
+              </div>
+              <input id="proton-log-dir" type="text" placeholder="Pl.: /tmp" aria-describedby="desc-log-dir">
+            </div>
+
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="winedebug">Wine hibakereső csatornák (WINEDEBUG)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-winedebug">?</span>
+                  <span id="desc-winedebug" role="tooltip" class="help-tip__content">Beállítja a Wine belső naplózási csatornáit. A csendes futáshoz használható a '-all' érték.</span>
+                </div>
+              </div>
+              <select id="winedebug" aria-describedby="desc-winedebug">
+                <option value="" selected>Alapértelmezett naplózás</option>
+                <option value="-all">-all (Csendes mód - teljesítmény javulhat)</option>
+                <option value="+timestamp,+pid,+tid">+timestamp,+pid,+tid (Részletes időbélyeges)</option>
+                <option value="+fps">+fps (FPS értékek kiírása)</option>
+                <option value="+loaddll">+loaddll (DLL betöltések figyelése)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- GRAFIKA ÉS MEGJELENÍTÉS -->
+          <div class="section-title">Grafika és D3D Fordítások (DXVK / VKD3D)</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="dxvk-hud">DXVK HUD kijelző (DXVK_HUD)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-hud">?</span>
+                  <span id="desc-hud" role="tooltip" class="help-tip__content">Megjeleníti a belső teljesítménymérőt a játékban. Vesszővel elválasztva megadható pl.: fps, devinfo, gputemp, memory.</span>
+                </div>
+              </div>
+              <input id="dxvk-hud" type="text" placeholder="Pl.: fps,devinfo" aria-describedby="desc-hud">
+            </div>
+
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="dxvk-frame-rate">DXVK FPS korlát (DXVK_FRAME_RATE)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-dxvk-fps">?</span>
+                  <span id="desc-dxvk-fps" role="tooltip" class="help-tip__content">DXVK-alapú játékok (D3D9/10/11) belső képkocka-korlátozása. A 0 kikapcsolja a limitet.</span>
+                </div>
+              </div>
+              <input id="dxvk-frame-rate" type="number" min="0" placeholder="Nincs limit" aria-describedby="desc-dxvk-fps">
+            </div>
+          </div>
+
+          <div class="checkbox-grid" style="margin-bottom: 1.25rem;">
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-use-wined3d">
+              <span>WineD3D OpenGL használata (PROTON_USE_WINED3D=1)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-wined3d">?</span>
+                <span id="desc-wined3d" role="tooltip" class="help-tip__content">Forces OpenGL-alapú WineD3D fordítást a Vulkan-alapú DXVK helyett. Régi hardvereken hasznos.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-enable-hdr">
+              <span>HDR kimenet engedélyezése (PROTON_ENABLE_HDR=1)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-hdr-en">?</span>
+                <span id="desc-hdr-en" role="tooltip" class="help-tip__content">Engedélyezi a HDR támogatást, ha a monitorod és a rendszered támogatja azt.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-enable-nvapi">
+              <span>NVIDIA NVAPI engedélyezése (PROTON_ENABLE_NVAPI=1)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-nvapi">?</span>
+                <span id="desc-nvapi" role="tooltip" class="help-tip__content">Bekapcsolja az Nvidia-specifikus API-kat, amik a DLSS-hez és a Raytracing-hez szükségesek.</span>
+              </div>
+            </label>
+          </div>
+
+          <!-- HARMONIKA 1: HALADÓ DXVK / VKD3D -->
+          <div class="accordion">
+            <button type="button" class="accordion-toggle" id="accordion-btn-dxvk-vkd3d" aria-expanded="false" aria-controls="accordion-panel-dxvk-vkd3d">
+              <span>Haladó DXVK és VKD3D Beállítások</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="accordion-panel-dxvk-vkd3d" class="accordion-panel" role="region" aria-labelledby="accordion-btn-dxvk-vkd3d">
+              <div class="accordion-content">
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vkd3d-config">VKD3D beállítások (VKD3D_CONFIG)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vkd3d-cfg">?</span>
+                        <span id="desc-vkd3d-cfg" role="tooltip" class="help-tip__content">VKD3D (D3D12 to Vulkan) konfiguráció. Raytracing-hez add meg a 'dxr' vagy 'dxr11' opciót.</span>
+                      </div>
+                    </div>
+                    <input id="vkd3d-config" type="text" placeholder="Pl.: dxr11,dxr" aria-describedby="desc-vkd3d-cfg">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vkd3d-debug">VKD3D naplózás (VKD3D_DEBUG)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vkd3d-dbg">?</span>
+                        <span id="desc-vkd3d-dbg" role="tooltip" class="help-tip__content">A D3D12-Vulkan fordítás részletes naplózásának szintje.</span>
+                      </div>
+                    </div>
+                    <select id="vkd3d-debug" aria-describedby="desc-vkd3d-dbg">
+                      <option value="" selected>Alapértelmezett</option>
+                      <option value="none">none - Csendes</option>
+                      <option value="error">error - Csak hibák</option>
+                      <option value="warn">warn - Figyelmeztetések</option>
+                      <option value="info">info - Információs</option>
+                      <option value="debug">debug - Hibakeresési</option>
+                      <option value="trace">trace - Teljes nyomkövetés</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vkd3d-feature-level">D3D12 Feature Level korlát</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-feat-lvl">?</span>
+                        <span id="desc-feat-lvl" role="tooltip" class="help-tip__content">Lehetővé teszi a Direct3D 12 szolgáltatásszintjének korlátozását a kompatibilitás érdekében.</span>
+                      </div>
+                    </div>
+                    <select id="vkd3d-feature-level" aria-describedby="desc-feat-lvl">
+                      <option value="" selected>Alapértelmezett</option>
+                      <option value="12_1">12_1 - Direct3D 12.1</option>
+                      <option value="12_0">12_0 - Direct3D 12.0</option>
+                      <option value="11_1">11_1 - Direct3D 11.1</option>
+                      <option value="11_0">11_0 - Direct3D 11.0</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="dxvk-config-file">Egyedi DXVK konfigurációs fájl</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-dxvk-cfg">?</span>
+                        <span id="desc-dxvk-cfg" role="tooltip" class="help-tip__content">Elérési út egy egyedi dxvk.conf fájlhoz a játék futási paramétereinek szabályozásához.</span>
+                      </div>
+                    </div>
+                    <input id="dxvk-config-file" type="text" placeholder="Pl.: /home/user/dxvk.conf" aria-describedby="desc-dxvk-cfg">
+                  </div>
+                </div>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-d3d10">
+                    <span>D3D10 DXVK fordítás letiltása (PROTON_NO_D3D10=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-nod10">?</span>
+                      <span id="desc-nod10" role="tooltip" class="help-tip__content">Megakadályozza a DXVK-t a D3D10 hívások lefordításában.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-d3d11">
+                    <span>D3D11 DXVK fordítás letiltása (PROTON_NO_D3D11=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-nod11">?</span>
+                      <span id="desc-nod11" role="tooltip" class="help-tip__content">Megakadályozza a DXVK-t a D3D11 hívások lefordításában.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-d3d12">
+                    <span>D3D12 VKD3D fordítás letiltása (PROTON_NO_D3D12=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-nod12">?</span>
+                      <span id="desc-nod12" role="tooltip" class="help-tip__content">Megakadályozza a VKD3D-t a D3D12 hívások lefordításában (a játék visszaeshet D3D11-re).</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-state-cache">
+                    <span>DXVK State Cache letiltása (DXVK_STATE_CACHE=0)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-nocache">?</span>
+                      <span id="desc-nocache" role="tooltip" class="help-tip__content">Kikapcsolja a DXVK shader gyorsítótárát. (Csak hibakereséshez).</span>
+                    </div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- HARMONIKA 2: CPU SZINKRONIZÁCIÓ ÉS RENDSZER -->
+          <div class="accordion">
+            <button type="button" class="accordion-toggle" id="accordion-btn-cpu-system" aria-expanded="false" aria-controls="accordion-panel-cpu-system">
+              <span>CPU Szinkronizáció és Rendszer</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="accordion-panel-cpu-system" class="accordion-panel" role="region" aria-labelledby="accordion-btn-cpu-system">
+              <div class="accordion-content">
+                
+                <div class="form-group">
+                  <div class="label-wrapper">
+                    <label for="mesa-vk-device-select">Vulkan GPU eszköz választás (MESA_VK_DEVICE_SELECT)</label>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-gpu-select">?</span>
+                      <span id="desc-gpu-select" role="tooltip" class="help-tip__content">Mesa drivereknél megmondja, melyik videókártyát használja a játék (pl. 1002:7300 hibrid laptopoknál).</span>
+                    </div>
+                  </div>
+                  <input id="mesa-vk-device-select" type="text" placeholder="Pl.: 1002:7300" aria-describedby="desc-gpu-select">
+                </div>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-esync">
+                    <span>Esync (Eventfd szinkr.) letiltása (PROTON_NO_ESYNC=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-esync">?</span>
+                      <span id="desc-esync" role="tooltip" class="help-tip__content">Kikapcsolja a gyorsabb eventfd alapú többszálúsági szinkronizációt. Hibakereséshez hasznos.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-fsync">
+                    <span>Fsync (Futex szinkr.) letiltása (PROTON_NO_FSYNC=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-fsync">?</span>
+                      <span id="desc-fsync" role="tooltip" class="help-tip__content">Kikapcsolja a modern Linux kernelekben található gyors szinkronizációs eljárást.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-use-ntsync">
+                    <span>Ntsync natív szinkr. engedélyezése (PROTON_USE_NTSYNC=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-ntsync">?</span>
+                      <span id="desc-ntsync" role="tooltip" class="help-tip__content">Engedélyezi az új NT szinkronizációt (kompatibilis, friss rendszermagot igényel).</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-force-laa">
+                    <span>Large Address Aware (LAA) kényszerítése</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-laa">?</span>
+                      <span id="desc-laa" role="tooltip" class="help-tip__content">Megengedi a 32-bites játékoknak a 2 GB feletti RAM elérését, ami megelőzheti a régi játékok memória-összeomlását.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-heap-delay-free">
+                    <span>Késleltetett memória-felszabadítás (Debug)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-heap">?</span>
+                      <span id="desc-heap" role="tooltip" class="help-tip__content">Segít elkerülni az aszinkron memória-felszabadítási hibákból eredő fagyásokat.</span>
+                    </div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- HARMONIKA 3: INTEGRÁCIÓK ÉS RENDSZER RÁJÁTSZÁS -->
+          <div class="accordion">
+            <button type="button" class="accordion-toggle" id="accordion-btn-integrations" aria-expanded="false" aria-controls="accordion-panel-integrations">
+              <span>Integrációk és Rendszer Rájátszások</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="accordion-panel-integrations" class="accordion-panel" role="region" aria-labelledby="accordion-btn-integrations">
+              <div class="accordion-content">
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="wineprefix">Egyedi Wine Prefix mappa (WINEPREFIX)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-prefix">?</span>
+                        <span id="desc-prefix" role="tooltip" class="help-tip__content">Egyedi elérési utat határoz meg a virtuális C: meghajtóhoz és regisztrációs adatbázishoz.</span>
+                      </div>
+                    </div>
+                    <input id="wineprefix" type="text" placeholder="Pl.: /home/user/jatek_prefix" aria-describedby="desc-prefix">
+                  </div>
+                </div>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-gamemoderun">
+                    <span>Feral GameMode futtatás (gamemoderun)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-gamemode">?</span>
+                      <span id="desc-gamemode" role="tooltip" class="help-tip__content">Engedélyezi a Feral GameMode-ot a processzor és rendszer erőforrásainak automatikus játékra hangolásához.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-mangohud">
+                    <span>MangoHud teljesítmény-réteg aktíválása</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-mangohud-env">?</span>
+                      <span id="desc-mangohud-env" role="tooltip" class="help-tip__content">Környezeti változókon keresztül is bekapcsolja a MangoHud overlay megjelenítését a játék indításakor.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-vkbasalt">
+                    <span>vkBasalt grafikai shader réteg (ENABLE_VKBASALT=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vkbasalt">?</span>
+                      <span id="desc-vkbasalt" role="tooltip" class="help-tip__content">Aktiválja a vkBasalt utófeldolgozó shader réteget a játék vizuális javítására (élesítés, színkorrekciók).</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-enable-wayland">
+                    <span>Kísérleti Wayland driver (PROTON_ENABLE_WAYLAND=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-wayland">?</span>
+                      <span id="desc-wayland" role="tooltip" class="help-tip__content">Engedélyezi a Wine beépített kísérleti Wayland driverét, kikerülve az Xwayland-et.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-hide-nvidia-gpu">
+                    <span>NVIDIA GPU elrejtése a játék elől (PROTON_HIDE_NVIDIA_GPU=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-hide-nv">?</span>
+                      <span id="desc-hide-nv" role="tooltip" class="help-tip__content">Elrejti az Nvidia azonosítókat, megelőzve azokat az összeomlásokat, ahol a játék nem kezeli le helyesen az Nvidia drivereket.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-dlss-upgrade">
+                    <span>DLSS verzió frissítés (PROTON_DLSS_UPGRADE=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-dlss-up">?</span>
+                      <span id="desc-dlss-up" role="tooltip" class="help-tip__content">Megengedi az újabb DLSS verziók felülírását a játék könyvtárában.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-dump-debug-commands">
+                    <span>Debug parancsfájlok elmentése (PROTON_DUMP_DEBUG_COMMANDS=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-dump-db">?</span>
+                      <span id="desc-dump-db" role="tooltip" class="help-tip__content">Létrehoz egy indítófájlt a /tmp könyvtárban, amivel a Steam-en kívülről is pontosan ugyanúgy indítható el a játék.</span>
+                    </div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- KÖRNYEZETI ÉS PARANCS MEZŐK -->
+          <div class="section-title">Egyéb paraméterek és indítóparancs</div>
+
+          <div class="form-group">
+            <div class="label-wrapper">
+              <label for="user-launch-args">Egyéb egyedi környezeti változók</label>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-user-args">?</span>
+                <span id="desc-user-args" role="tooltip" class="help-tip__content">Bármilyen egyéb környezeti változó, amit a fenti beállítások nem fednek le. Pl. PROTON_NO_WRITE_WATCH=1</span>
+              </div>
+            </div>
+            <input id="user-launch-args" type="text" placeholder="Pl.: PROTON_NO_WRITE_WATCH=1" aria-describedby="desc-user-args">
+          </div>
+
+          <div class="form-group">
+            <div class="label-wrapper">
+              <label for="launch-command">Futtatandó játék / alkalmazás indítóparancsa</label>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-cmd">?</span>
+                <span id="desc-cmd" role="tooltip" class="help-tip__content">A játék indítófájlja vagy parancsa. Steam indítási opciók esetén használd a %command% kifejezést.</span>
+              </div>
+            </div>
+            <textarea id="launch-command" placeholder="Pl.: %command% vagy /path/to/game.exe" aria-describedby="desc-cmd">%command%</textarea>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- JOBB OLDALI OSZLOP: PARANCS KIMENET ÉS SABLONOK -->
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        
+        <!-- KIMENET KÁRTYA -->
+        <section class="card" id="command-output-section" aria-labelledby="output-title">
+          <div class="panel-header">
+            <h2 id="output-title">Generált Parancs</h2>
+          </div>
+          
+          <p class="sr-only">Ez a szövegmező automatikusan frissül a fenti beállítások változtatásakor.</p>
+          
+          <div class="output-box">
+            <pre id="command-display">%command%</pre>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.25rem;">
+            <button class="btn btn-primary" id="copy-btn" type="button" title="Parancs másolása a vágólapra">Parancs másolása</button>
+            <button class="btn btn-secondary" id="example-btn" type="button" title="Egy bemutató beállításcsomag betöltése">Példa betöltése</button>
+          </div>
+
+          <div class="copy-status" id="copy-status" role="status" aria-live="polite"></div>
+          <div id="sr-announcer" class="sr-only" aria-live="polite">A parancs frissült.</div>
+        </section>
+
+        <!-- SABLONOK KÁRTYA -->
+        <section class="card" aria-labelledby="presets-title-sec">
+          <div class="panel-header">
+            <h2 id="presets-title-sec">Sablonok</h2>
+          </div>
+
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.4;">
+            Mentsd el a különböző játékokhoz tartozó Proton beállításaidat a böngésző helyi tárolójába (IndexedDB).
+          </p>
+
+          <div class="presets-controls">
+            <button class="btn btn-secondary" id="import-btn" type="button" title="Sablonok importálása JSON fájlból">📂 Import</button>
+            <button class="btn btn-secondary" id="export-btn" type="button" title="Sablonok exportálása JSON fájlba">💾 Export</button>
+          </div>
+
+          <div class="preset-save-row">
+            <input type="text" id="preset-name-input" placeholder="Új sablon neve..." aria-label="Új sablon neve">
+            <button class="btn btn-success" id="save-preset-btn" type="button" title="Aktuális beállítások mentése ezen a néven">Mentés</button>
+          </div>
+
+          <div class="presets-list" id="presets-container" role="region" aria-label="Mentett sablonok listája">
+            <!-- Dinamikusan generált sablonok helye -->
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 1rem 0;" id="empty-presets-msg">
+              Nincsenek mentett sablonok.
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Proton Parancskészítő &copy; 2026. Minden jog fenntartva. &bull; <a href="https://git.rp1.hu/gabeszm/linux-gaming-commands" target="_blank" rel="noopener">git.rp1.hu/gabeszm/linux-gaming-commands</a></p>
+  </footer>
+
+  <!-- -------------------------------------------------------------
+       VANILLA JAVASCRIPT LOGIKA (jQuery-mentesített változat)
+       ------------------------------------------------------------- -->
+  <script src="script.js" defer></script>
+</body>
+</html>

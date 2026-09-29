@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Steam Indítási Opciók - Launcher Suite</title>
+  <meta name="description" content="Egyesített parancskészítő Gamescope, Proton és Wine DLL felülbírálások egybefésüléséhez és konfigurálásához.">
+  
+  <!-- Prémium betűtípusok -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css?v=1.2">
+</head>
+<body data-page="main">
+
+  <main>
+    <header>
+      <h1>Steam Indítási Opciók - Launcher Suite</h1>
+      <p>Egyesítsd a Gamescope-ot, a Proton beállításokat és a Wine DLL felülbírálásokat egyetlen Steam indítási parancsba.</p>
+    </header>
+
+    <div class="dashboard">
+      <!-- BAL OLDALI OSZLOP: PARAMÉTEREK ÉS FÜLEK -->
+      <section class="card" aria-labelledby="parameters-title">
+        <div class="panel-header" style="margin-bottom: 1rem;">
+          <h2 id="parameters-title">Fülek szerkesztése <span id="active-preset-indicator" class="subtitle"></span></h2>
+          <button class="btn btn-danger" id="clear-btn" type="button" title="Minden beviteli mező visszaállítása">Ürítés</button>
+        </div>
+
+        <!-- Fül navigáció -->
+        <div class="tabs-nav" role="tablist">
+          <button type="button" class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-gamescope" id="btn-tab-gamescope">Gamescope</button>
+          <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-proton" id="btn-tab-proton">Proton</button>
+          <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-dll" id="btn-tab-dll">DLL felülbírálás</button>
+        </div>
+
+        <form id="builder-form" onsubmit="event.preventDefault();">
+
+          <!-- 1. GAMESCOPE FÜL -->
+          <div id="tab-gamescope" class="tab-content active" role="tabpanel" aria-labelledby="btn-tab-gamescope">
+
+          
+          <!-- RENDER FELBONTÁS -->
+          <div class="section-title">
+            <span>Renderelési Felbontás</span>
+            <div class="help-tip">
+              <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-render-res">?</span>
+              <span id="desc-render-res" role="tooltip" class="help-tip__content">A játék belső rajzolási felbontása. Kisebb felbontáson a játék gyorsabban fut, de pixelesebb lehet.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-wrapper">
+              <label for="resolution-preset">Gyorssablonok</label>
+            </div>
+            <select id="resolution-preset" title="Felbontás gyorssablonok">
+              <option value="" selected>Válassz felbontást, vagy add meg kézzel alul</option>
+              <optgroup label="16:9 (Elterjedt)">
+                <option value="1280x720">1280 × 720 (HD / 720p)</option>
+                <option value="1920x1080">1920 × 1080 (Full HD / 1080p)</option>
+                <option value="2560x1440">2560 × 1440 (QHD / 2K)</option>
+                <option value="3840x2160">3840 × 2160 (UHD / 4K)</option>
+              </optgroup>
+              <optgroup label="16:10 (Steam Deck / Hordozható)">
+                <option value="1280x800">1280 × 800 (Steam Deck natív)</option>
+                <option value="1440x900">1440 × 900</option>
+                <option value="1680x1050">1680 × 1050</option>
+                <option value="1920x1200">1920 × 1200</option>
+                <option value="2560x1600">2560 × 1600</option>
+              </optgroup>
+              <optgroup label="Ultraszéles / Egyéb">
+                <option value="2560x1080">2560 × 1080 (Ultrawide 21:9)</option>
+                <option value="3440x1440">3440 × 1440 (Ultrawide 21:9)</option>
+                <option value="3840x1080">3840 × 1080 (Super Ultrawide 32:9)</option>
+                <option value="5120x1440">5120 × 1440 (Super Ultrawide 32:9)</option>
+                <option value="1024x768">1024 × 768 (Régi 4:3)</option>
+                <option value="1280x1024">1280 × 1024 (Régi 5:4)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="game-width">Szélesség (-w)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-w">?</span>
+                  <span id="desc-w" role="tooltip" class="help-tip__content">A játék belső szélessége képpontban. Például: 1280</span>
+                </div>
+              </div>
+              <input id="game-width" type="number" min="1" placeholder="1280" aria-describedby="desc-w">
+            </div>
+
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="game-height">Magasság (-h)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-h">?</span>
+                  <span id="desc-h" role="tooltip" class="help-tip__content">A játék belső magassága képpontban. Például: 720</span>
+                </div>
+              </div>
+              <input id="game-height" type="number" min="1" placeholder="720" aria-describedby="desc-h">
+            </div>
+          </div>
+
+          <!-- KIMENETI FELBONTÁS -->
+          <div class="section-title">
+            <span>Kimeneti Felbontás</span>
+            <div class="help-tip">
+              <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-output-res">?</span>
+              <span id="desc-output-res" role="tooltip" class="help-tip__content">A Gamescope ablak valódi mérete. A belső render felbontás erre a méretre lesz felskálázva.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-wrapper">
+              <label for="output-preset">Gyorssablonok</label>
+            </div>
+            <select id="output-preset" title="Kimeneti felbontás gyorssablonok">
+              <option value="" selected>Válassz felbontást, vagy add meg kézzel alul</option>
+              <optgroup label="16:9 (Elterjedt)">
+                <option value="1280x720">1280 × 720 (HD / 720p)</option>
+                <option value="1920x1080">1920 × 1080 (Full HD / 1080p)</option>
+                <option value="2560x1440">2560 × 1440 (QHD / 2K)</option>
+                <option value="3840x2160">3840 × 2160 (UHD / 4K)</option>
+              </optgroup>
+              <optgroup label="16:10">
+                <option value="1280x800">1280 × 800 (Steam Deck natív)</option>
+                <option value="1440x900">1440 × 900</option>
+                <option value="1920x1200">1920 × 1200</option>
+                <option value="2560x1600">2560 × 1600</option>
+              </optgroup>
+              <optgroup label="Ultraszéles / Egyéb">
+                <option value="2560x1080">2560 × 1080 (Ultrawide 21:9)</option>
+                <option value="3440x1440">3440 × 1440 (Ultrawide 21:9)</option>
+                <option value="3840x1080">3840 × 1080 (Super Ultrawide 32:9)</option>
+                <option value="5120x1440">5120 × 1440 (Super Ultrawide 32:9)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="output-width">Kimeneti szélesség (-W)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-W">?</span>
+                  <span id="desc-W" role="tooltip" class="help-tip__content">A Gamescope ablak szélessége. Általában megegyezik a monitorod szélességével.</span>
+                </div>
+              </div>
+              <input id="output-width" type="number" min="1" placeholder="1920" aria-describedby="desc-W">
+            </div>
+
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="output-height">Kimeneti magasság (-H)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-H">?</span>
+                  <span id="desc-H" role="tooltip" class="help-tip__content">A Gamescope ablak magassága. Általában megegyezik a monitorod magasságával.</span>
+                </div>
+              </div>
+              <input id="output-height" type="number" min="1" placeholder="1080" aria-describedby="desc-H">
+            </div>
+          </div>
+
+          <!-- TELJESÍTMÉNY ÉS MINŐSÉG -->
+          <div class="section-title">Teljesítmény és Megjelenítés</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="fps-limit">FPS korlát (-r)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-r">?</span>
+                  <span id="desc-r" role="tooltip" class="help-tip__content">A játék maximális képkockasebessége. Például: 60, 144.</span>
+                </div>
+              </div>
+              <input id="fps-limit" type="number" min="1" placeholder="Nincs limit" aria-describedby="desc-r">
+            </div>
+
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="fps-unfocused">Háttérben lévő FPS (-o)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-o">?</span>
+                  <span id="desc-o" role="tooltip" class="help-tip__content">Maximális képkockasebesség, ha a játék ablak nincs fókuszban (pl. Alt+Tab-olva van). Energiát takarít meg.</span>
+                </div>
+              </div>
+              <input id="fps-unfocused" type="number" min="1" placeholder="Alapértelmezett" aria-describedby="desc-o">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="scaling-mode">Skálázási mód (-S)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-S">?</span>
+                  <span id="desc-S" role="tooltip" class="help-tip__content">Meghatározza, hogyan legyen a játék képe kinyújtva a kimeneti ablakra.</span>
+                </div>
+              </div>
+              <select id="scaling-mode" aria-describedby="desc-S">
+                <option value="" selected>Alapértelmezett (Auto)</option>
+                <option value="auto">auto - Automatikus</option>
+                <option value="integer">integer - Pixelpontos egész számú</option>
+                <option value="fit">fit - Képaránytartó kitöltés</option>
+                <option value="fill">fill - Képernyő kitöltése</option>
+                <option value="stretch">stretch - Kinyújtás (torzíthat)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="upscaler-type">Felskálázó típusa (-F)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-F">?</span>
+                  <span id="desc-F" role="tooltip" class="help-tip__content">A kép elmosódásmentes nagyítására szolgáló algoritmusok.</span>
+                </div>
+              </div>
+              <select id="upscaler-type" aria-describedby="desc-F">
+                <option value="" selected>Alapértelmezett</option>
+                <option value="linear">linear - Bilineáris szűrés</option>
+                <option value="nearest">nearest - Legközelebbi szomszéd</option>
+                <option value="fsr">fsr - AMD FidelityFX Super Resolution</option>
+                <option value="nis">nis - NVIDIA Image Scaling</option>
+                <option value="pixel">pixel - Pixel-art optimalizált</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Kijelző index -->
+          <div class="form-group">
+            <div class="label-wrapper">
+              <label for="display-index">Célkijelző indexe (--display-index)</label>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-display">?</span>
+                <span id="desc-display" role="tooltip" class="help-tip__content">Többmonitoros rendszereknél megmondja a Gamescope-nak, melyik monitoron induljon el. A számokat a 'gamescope --list-displays' paranccsal listázhatod ki a terminálodban.</span>
+              </div>
+            </div>
+            <input id="display-index" type="number" min="-1" value="-1" placeholder="-1 (Alapértelmezett kijelző)" aria-describedby="desc-display">
+          </div>
+
+          <!-- JELZŐK / FLAGS -->
+          <div class="section-title">Kapcsolók (Flags)</div>
+          <div class="checkbox-grid">
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-fullscreen">
+              <span>Teljes képernyő (-f)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-f">?</span>
+                <span id="desc-f" role="tooltip" class="help-tip__content">A Gamescope ablakot teljes képernyős módban indítja el.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-borderless">
+              <span>Keret nélküli ablak (-b)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-b">?</span>
+                <span id="desc-b" role="tooltip" class="help-tip__content">Keret nélkül jeleníti meg az ablakot.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-immediate">
+              <span>Azonnali képkocka-váltás (--immediate-flips)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-imm">?</span>
+                <span id="desc-imm" role="tooltip" class="help-tip__content">Kikapcsolja a V-Sync-et, ezzel minimálisra csökkenti a beviteli késleltetést, de képszakadást (screen tearing) okozhat.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-mangoapp">
+              <span>MangoHud statisztikai réteg (--mangoapp)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-mango">?</span>
+                <span id="desc-mango" role="tooltip" class="help-tip__content">Megjeleníti a MangoHud FPS/teljesítmény-statisztikákat. Ehhez a mangoapp csomagnak telepítve kell lennie a rendszereden.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-expose-wayland">
+              <span>Wayland kliensek engedélyezése (--expose-wayland)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-wayland">?</span>
+                <span id="desc-wayland" role="tooltip" class="help-tip__content">Engedélyezi a natív Wayland-alapú alkalmazások közvetlen futtatását a Gamescope-on belül xdg-shell használatával.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-hdr">
+              <span>HDR engedélyezése (--hdr-enabled)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-hdr">?</span>
+                <span id="desc-hdr" role="tooltip" class="help-tip__content">Engedélyezi a nagy dinamikatartományú (HDR) kimenetet, amennyiben a monitorod és a kártyád támogatja.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-adaptive-sync">
+              <span>Adaptív szinkronizáció (--adaptive-sync)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-sync">?</span>
+                <span id="desc-sync" role="tooltip" class="help-tip__content">Engedélyezi a változó képfrissítést (VRR / FreeSync / G-Sync) a támogatott monitorokon.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-grab-cursor">
+              <span>Kurzor kényszerítése a játékba (--force-grab-cursor)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-grab-cur">?</span>
+                <span id="desc-grab-cur" role="tooltip" class="help-tip__content">Nem engedi ki az egérkurzort a játék ablakából. Elsősorban belső nézetes (FPS) játékokhoz javasolt.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-grab-keyboard">
+              <span>Billentyűzet zárolása (--grab)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-grab-key">?</span>
+                <span id="desc-grab-key" role="tooltip" class="help-tip__content">A billentyűzet bemenetet teljesen a Gamescope ablakhoz rendeli.</span>
+              </div>
+            </label>
+          </div>
+
+          <!-- KÖRNYEZETI ÉS PARANCS MEZŐK -->
+          <div class="section-title">Futtatási környezet és Indítandó parancs</div>
+
+          <div class="form-group">
+            <div class="label-wrapper">
+              <label for="prepended-values">Környezeti változók (Gamescope elé kerül)</label>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-prepend">?</span>
+                <span id="desc-prepend" role="tooltip" class="help-tip__content">A gamescope parancs elé beszúrt környezeti változók vagy előtét programok. Például: LD_PRELOAD=/path/to/library.so PROTON_LOG=1</span>
+              </div>
+            </div>
+            <input id="prepended-values" type="text" placeholder="Pl.: LD_PRELOAD=/usr/lib/libtcmalloc.so" aria-describedby="desc-prepend">
+          </div>
+
+          <div class="form-group">
+            <div class="label-wrapper">
+              <label for="extra-args">További Gamescope argumentumok (Közvetlenül a gamescope-nak)</label>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-extra">?</span>
+                <span id="desc-extra" role="tooltip" class="help-tip__content">Bármilyen egyéb Gamescope parancssori opció, ami nem érhető el a fenti kezelőfelületen.</span>
+              </div>
+            </div>
+            <input id="extra-args" type="text" placeholder="Pl.: --prefer-output-width 1920" aria-describedby="desc-extra">
+          </div>
+          
+
+          <!-- HARMONIKA 1: HALADÓ MEGJELENÍTÉS ÉS BEMENET -->
+          <div class="accordion">
+            <button type="button" class="accordion-toggle" id="accordion-btn-display-input" aria-expanded="false" aria-controls="accordion-panel-display-input">
+              <span>Haladó Megjelenítés és Bemenet</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="accordion-panel-display-input" class="accordion-panel" role="region" aria-labelledby="accordion-btn-display-input">
+              <div class="accordion-content">
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="backend">Renderelő backend (--backend)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-backend">?</span>
+                        <span id="desc-backend" role="tooltip" class="help-tip__content">Kiválasztja a használni kívánt renderelési backendet (pl. SDL, Wayland, DRM, Headless).</span>
+                      </div>
+                    </div>
+                    <select id="backend" aria-describedby="desc-backend">
+                      <option value="" selected>Alapértelmezett (Auto)</option>
+                      <option value="sdl">sdl - SDL2 ablakos mód</option>
+                      <option value="wayland">wayland - Natív Wayland</option>
+                      <option value="drm">drm - Közvetlen DRM (standalone)</option>
+                      <option value="openvr">openvr - SteamVR Overlay</option>
+                      <option value="headless">headless - Virtuális / Kijelző nélküli</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="force-orientation">Kijelző elforgatása (--force-orientation)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-orientation">?</span>
+                        <span id="desc-orientation" role="tooltip" class="help-tip__content">Kényszeríti a belső kijelző elforgatását. Különösen hasznos portré képernyős kézi PC-khez.</span>
+                      </div>
+                    </div>
+                    <select id="force-orientation" aria-describedby="desc-orientation">
+                      <option value="" selected>Nincs elforgatás</option>
+                      <option value="normal">normal - Normál</option>
+                      <option value="left">left - Balra (90 fok)</option>
+                      <option value="right">right - Jobbra (270 fok)</option>
+                      <option value="upsidedown">upsidedown - Fejjel lefelé (180 fok)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="prefer-vk-device">Vulkan GPU eszköz (--prefer-vk-device)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vk-device">?</span>
+                        <span id="desc-vk-device" role="tooltip" class="help-tip__content">Megadja a preferált Vulkan videókártyát azonosító alapján (pl. 1002:7300 AMD-hez).</span>
+                      </div>
+                    </div>
+                    <input id="prefer-vk-device" type="text" placeholder="Pl.: 1002:7300" aria-describedby="desc-vk-device">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="mouse-sensitivity">Egér érzékenység (-s)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-sensitivity">?</span>
+                        <span id="desc-sensitivity" role="tooltip" class="help-tip__content">Megszorozza az egérmozgást a megadott tizedes számmal. Például: 1.5.</span>
+                      </div>
+                    </div>
+                    <input id="mouse-sensitivity" type="number" min="0.1" step="0.1" placeholder="Pl.: 1.0" aria-describedby="desc-sensitivity">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="cursor-path">Egyedi kurzor útvonal (--cursor)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-cursor-path">?</span>
+                        <span id="desc-cursor-path" role="tooltip" class="help-tip__content">Útvonal az alapértelmezett egérkurzor képéhez vagy témájához.</span>
+                      </div>
+                    </div>
+                    <input id="cursor-path" type="text" placeholder="Pl.: /usr/share/icons/default" aria-describedby="desc-cursor-path">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="hide-cursor-delay">Kurzor elrejtés ideje (-C)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-cursor-delay">?</span>
+                        <span id="desc-cursor-delay" role="tooltip" class="help-tip__content">Az egérkurzor elrejtése ennyi ezredmásodperc tétlenség után. Pl.: 1000.</span>
+                      </div>
+                    </div>
+                    <input id="hide-cursor-delay" type="number" min="-1" placeholder="Pl.: 3000" aria-describedby="desc-cursor-delay">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="cursor-scale-height">Kurzor skála bázismagasság</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-cursor-scale">?</span>
+                        <span id="desc-cursor-scale" role="tooltip" class="help-tip__content">Kimeneti bázismagasság a kurzor méretének lineáris igazításához (pl. 1080).</span>
+                      </div>
+                    </div>
+                    <input id="cursor-scale-height" type="number" min="1" placeholder="Pl.: 1080" aria-describedby="desc-cursor-scale">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="xwayland-count">Xwayland szerverek száma</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-xwayland">?</span>
+                        <span id="desc-xwayland" role="tooltip" class="help-tip__content">A létrehozandó különálló Xwayland szerverek száma.</span>
+                      </div>
+                    </div>
+                    <input id="xwayland-count" type="number" min="1" placeholder="Pl.: 1" aria-describedby="desc-xwayland">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="virtual-connector-strategy">Virtuális csatlakozó stratégia</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-connector">?</span>
+                        <span id="desc-connector" role="tooltip" class="help-tip__content">Meghatározza a virtuális kijelző-csatlakozók generálási módját.</span>
+                      </div>
+                    </div>
+                    <input id="virtual-connector-strategy" type="text" placeholder="Pl.: default" aria-describedby="desc-connector">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="framerate-limit">Egyszerű FPS osztó limit</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-fps-div">?</span>
+                        <span id="desc-fps-div" role="tooltip" class="help-tip__content">Egyszerű FPS korlát. A képfrissítési gyakoriság osztója (pl. 60Hz / 2 = 30 FPS).</span>
+                      </div>
+                    </div>
+                    <input id="framerate-limit" type="number" min="0" placeholder="Pl.: 0 (Kikapcsolva)" aria-describedby="desc-fps-div">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="stats-path">Statisztika fájl útvonala (-T)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-stats">?</span>
+                        <span id="desc-stats" role="tooltip" class="help-tip__content">Útvonal, ahová a Gamescope kiírja a futási statisztikákat (pl. FPS adatokat).</span>
+                      </div>
+                    </div>
+                    <input id="stats-path" type="text" placeholder="Pl.: /tmp/gamescope-stats.txt" aria-describedby="desc-stats">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="ready-fd">Kész állapot fájlleírója (-R)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-fd">?</span>
+                        <span id="desc-fd" role="tooltip" class="help-tip__content">Megad egy fájlleírót (File Descriptor), amin a Gamescope jelzi a kész állapotot. Haladó szkriptekhez.</span>
+                      </div>
+                    </div>
+                    <input id="ready-fd" type="number" min="-1" value="-1" placeholder="-1 (Kikapcsolva)" aria-describedby="desc-fd">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="label-wrapper">
+                    <label for="max-scale">Maximális skálázási tényező (--max-scale)</label>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-max-scale">?</span>
+                      <span id="desc-max-scale" role="tooltip" class="help-tip__content">Meghatározza a maximális felskálázási szorzót. A 0 érték kikapcsolja a korlátot.</span>
+                    </div>
+                  </div>
+                  <div class="range-container">
+                    <input type="range" id="max-scale" min="0" max="10" value="0">
+                    <span id="max-scale-val" class="range-value">Kikapcsolva</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="label-wrapper">
+                    <label for="fsr-sharpness">AMD FSR élesség (--fsr-sharpness)</label>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-sharp">?</span>
+                      <span id="desc-sharp" role="tooltip" class="help-tip__content">Ha a felskálázó FSR módra van állítva, ez adja meg a kép élességét. A 0 a legélesebb kép, a 20 a legelmosottabb. Alapértelmezett: 2.</span>
+                    </div>
+                  </div>
+                  <div class="range-container">
+                    <input type="range" id="fsr-sharpness" min="0" max="20" value="2">
+                    <span id="fsr-sharpness-val" class="range-value">2</span>
+                  </div>
+                </div>
+
+                <div class="checkbox-grid" style="margin-top: 1rem;">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-rt">
+                    <span>Valós idejű prioritás (--rt)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-rt">?</span>
+                      <span id="desc-rt" role="tooltip" class="help-tip__content">Valós idejű ütemezési prioritást (RT scheduling) biztosít a Gamescope szálaknak a stabilabb FPS-ért.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-steam">
+                    <span>Steam kliens integráció (-e)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-steam-integration">?</span>
+                      <span id="desc-steam-integration" role="tooltip" class="help-tip__content">Engedélyezi a Steam kliens integrációt és az Overlay-t a Gamescope-on belül.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-force-windows-fullscreen">
+                    <span>Ablakok kényszerítése fullscreen-re</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-force-fs">?</span>
+                      <span id="desc-force-fs" role="tooltip" class="help-tip__content">Kényszeríti a Gamescope-on belüli ablakokat a beágyazott kijelző méretére.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-disable-keybinds">
+                    <span>Billentyűparancsok tiltása (-k)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-dis-keys">?</span>
+                      <span id="desc-dis-keys" role="tooltip" class="help-tip__content">Letiltja a Gamescope beépített billentyűkombinációit (pl. Super+F, Super+G).</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-touch-gesture-translation">
+                    <span>Érintőgesztusok lefordítása</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-touch-tr">?</span>
+                      <span id="desc-touch-tr" role="tooltip" class="help-tip__content">Engedélyezi a képernyő érintőgesztusainak lefordítását szabványos egérmozgássá és kattintásokká.</span>
+                    </div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- HARMONIKA 2: HDR ÉS SZÍNKEZELÉS -->
+          <div class="accordion">
+            <button type="button" class="accordion-toggle" id="accordion-btn-hdr-color" aria-expanded="false" aria-controls="accordion-panel-hdr-color">
+              <span>HDR és Színkezelés</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="accordion-panel-hdr-color" class="accordion-panel" role="region" aria-labelledby="accordion-btn-hdr-color">
+              <div class="accordion-content">
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="sdr-gamut-wideness">SDR színskála kiterjesztése (--sdr-gamut-wideness)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-gamut">?</span>
+                        <span id="desc-gamut" role="tooltip" class="help-tip__content">SDR tartalom színskálájának kiterjesztése. Érték: 0 és 1 között (tizedes tört).</span>
+                      </div>
+                    </div>
+                    <input id="sdr-gamut-wideness" type="number" min="0" max="1" step="0.05" placeholder="Pl.: 0.5" aria-describedby="desc-gamut">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="hdr-sdr-content-nits">SDR tartalom fényereje nits-ben</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-sdr-nits">?</span>
+                        <span id="desc-sdr-nits" role="tooltip" class="help-tip__content">Az SDR tartalom fényereje HDR módban, nits mértékegységben. Alapértelmezett: 400 nits.</span>
+                      </div>
+                    </div>
+                    <input id="hdr-sdr-content-nits" type="number" min="1" placeholder="Pl.: 400" aria-describedby="desc-sdr-nits">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="hdr-itm-sdr-nits">ITM bemeneti SDR nits</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-itm-sdr">?</span>
+                        <span id="desc-itm-sdr" role="tooltip" class="help-tip__content">Az SDR->HDR inverz tónusleképezés (ITM) folyamatában használt kiinduló SDR nits érték. Alapértelmezett: 100 nits.</span>
+                      </div>
+                    </div>
+                    <input id="hdr-itm-sdr-nits" type="number" min="1" max="1000" placeholder="Pl.: 100" aria-describedby="desc-itm-sdr">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="hdr-itm-target-nits">ITM cél HDR nits</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-itm-target">?</span>
+                        <span id="desc-itm-target" role="tooltip" class="help-tip__content">Az inverz tónusleképezés célzott maximális fényereje nits-ben. Alapértelmezett: 1000 nits.</span>
+                      </div>
+                    </div>
+                    <input id="hdr-itm-target-nits" type="number" min="1" max="10000" placeholder="Pl.: 1000" aria-describedby="desc-itm-target">
+                  </div>
+                </div>
+
+                <div class="checkbox-grid" style="margin-top: 1rem;">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-hdr-itm-enabled">
+                    <span>SDR->HDR inverz tónusleképezés (--hdr-itm-enabled)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-itm">?</span>
+                      <span id="desc-itm" role="tooltip" class="help-tip__content">Engedélyezi az SDR tartalom automatikus felkonvertálását HDR-re (szimulált HDR).</span>
+                    </div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- HARMONIKA 3: BEÁGYAZOTT ÉS VR MÓD -->
+          <div class="accordion">
+            <button type="button" class="accordion-toggle" id="accordion-btn-embedded-vr" aria-expanded="false" aria-controls="accordion-panel-embedded-vr">
+              <span>Beágyazott és VR Mód (SteamVR)</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="accordion-panel-embedded-vr" class="accordion-panel" role="region" aria-labelledby="accordion-btn-embedded-vr">
+              <div class="accordion-content">
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="prefer-output">Preferált kimenetek csatlakozói (-O)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-pref-out">?</span>
+                        <span id="desc-pref-out" role="tooltip" class="help-tip__content">Prioritási sorrendbe állított kijelzőcsatlakozók listája (pl.: DP-1,HDMI-A-1). Beágyazott módban használatos.</span>
+                      </div>
+                    </div>
+                    <input id="prefer-output" type="text" placeholder="Pl.: DP-1,HDMI-A-1" aria-describedby="desc-pref-out">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="default-touch-mode">Alapértelmezett érintési mód</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-touch-mode">?</span>
+                        <span id="desc-touch-mode" role="tooltip" class="help-tip__content">Beállítja a fizikai képernyőérintés alapértelmezett működési módját (lebegés, bal klikk, stb.).</span>
+                      </div>
+                    </div>
+                    <select id="default-touch-mode" aria-describedby="desc-touch-mode">
+                      <option value="" selected>Alapértelmezett</option>
+                      <option value="0">0 - hover (lebegés)</option>
+                      <option value="1">1 - left click (bal gomb)</option>
+                      <option value="2">2 - right click (jobb gomb)</option>
+                      <option value="3">3 - middle click (középső gomb)</option>
+                      <option value="4">4 - passthrough (átengedés)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="generate-drm-mode">DRM mód generálás algoritmusa</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-drm-mode">?</span>
+                        <span id="desc-drm-mode" role="tooltip" class="help-tip__content">A DRM felbontási mód generálására szolgáló algoritmus (cvt vagy fixed).</span>
+                      </div>
+                    </div>
+                    <select id="generate-drm-mode" aria-describedby="desc-drm-mode">
+                      <option value="" selected>Alapértelmezett</option>
+                      <option value="cvt">cvt - Szabványos VESA CVT</option>
+                      <option value="fixed">fixed - Fixált módok</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vr-scrolls-speed">VR egér görgetési sebesség</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-scroll">?</span>
+                        <span id="desc-vr-scroll" role="tooltip" class="help-tip__content">Egér görgetésének sebessége SteamVR tapipad használatakor. Alapértelmezett: 8.0.</span>
+                      </div>
+                    </div>
+                    <input id="vr-scrolls-speed" type="number" min="0.1" step="0.5" placeholder="Pl.: 8.0" aria-describedby="desc-vr-scroll">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vr-overlay-key">VR overlay azonosító kulcs</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-key">?</span>
+                        <span id="desc-vr-key" role="tooltip" class="help-tip__content">A SteamVR overlay-hez használt egyedi kulcsszó.</span>
+                      </div>
+                    </div>
+                    <input id="vr-overlay-key" type="text" placeholder="Pl.: gamescope.overlay" aria-describedby="desc-vr-key">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vr-app-overlay-key">Gyermek-folyamat VR overlay kulcs</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-app-key">?</span>
+                        <span id="desc-vr-app-key" role="tooltip" class="help-tip__content">A gyermekként indított alkalmazások SteamVR overlay kulcsa.</span>
+                      </div>
+                    </div>
+                    <input id="vr-app-overlay-key" type="text" placeholder="Pl.: gamescope.child.overlay" aria-describedby="desc-vr-app-key">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vr-overlay-explicit-name">Kényszerített VR overlay név</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-name">?</span>
+                        <span id="desc-vr-name" role="tooltip" class="help-tip__content">A SteamVR overlay-ben megjelenő kényszerített név.</span>
+                      </div>
+                    </div>
+                    <input id="vr-overlay-explicit-name" type="text" placeholder="Pl.: Gamescope" aria-describedby="desc-vr-name">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vr-overlay-default-name">Alapértelmezett VR overlay név</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-def-name">?</span>
+                        <span id="desc-vr-def-name" role="tooltip" class="help-tip__content">Tartalék SteamVR overlay név abban az esetben, ha a játékablaknak nincs saját címe.</span>
+                      </div>
+                    </div>
+                    <input id="vr-overlay-default-name" type="text" placeholder="Pl.: Game" aria-describedby="desc-vr-def-name">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vr-overlay-icon">VR overlay ikon útvonal</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-icon">?</span>
+                        <span id="desc-vr-icon" role="tooltip" class="help-tip__content">Képfájl útvonala a SteamVR overlay-ben megjelenítendő ikonhoz.</span>
+                      </div>
+                    </div>
+                    <input id="vr-overlay-icon" type="text" placeholder="Pl.: /path/to/icon.png" aria-describedby="desc-vr-icon">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vr-overlay-physical-width">Fizikai szélesség méterben</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-pwidth">?</span>
+                        <span id="desc-vr-pwidth" role="tooltip" class="help-tip__content">A virtuális VR kijelző fizikai szélessége méterben megadva.</span>
+                      </div>
+                    </div>
+                    <input id="vr-overlay-physical-width" type="number" min="0.1" step="0.1" placeholder="Pl.: 1.0" aria-describedby="desc-vr-pwidth">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vr-overlay-physical-curvature">Kijelző görbülete (VR)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-curve">?</span>
+                        <span id="desc-vr-curve" role="tooltip" class="help-tip__content">A virtuális VR kijelző görbületi tényezője.</span>
+                      </div>
+                    </div>
+                    <input id="vr-overlay-physical-curvature" type="number" min="0.0" step="0.1" placeholder="Pl.: 0.0" aria-describedby="desc-vr-curve">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vr-overlay-physical-pre-curve-pitch">Pre-görbület dőlésszöge (VR)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-pitch">?</span>
+                        <span id="desc-vr-pitch" role="tooltip" class="help-tip__content">A virtuális VR kijelző pre-görbületének dőlésszöge.</span>
+                      </div>
+                    </div>
+                    <input id="vr-overlay-physical-pre-curve-pitch" type="number" step="0.1" placeholder="Pl.: 0.0" aria-describedby="desc-vr-pitch">
+                  </div>
+                </div>
+
+                <div class="checkbox-grid" style="margin-top: 1rem;">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-vr-overlay-show-immediately">
+                    <span>Azonnali fókuszálás</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-imm">?</span>
+                      <span id="desc-vr-imm" role="tooltip" class="help-tip__content">Elindítás után azonnal a fókuszba helyezi a SteamVR overlay-t.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-vr-overlay-enable-control-bar">
+                    <span>Vezérlősáv engedélyezése</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-cbar">?</span>
+                      <span id="desc-vr-cbar" role="tooltip" class="help-tip__content">Engedélyezi a virtuális SteamVR vezérlősávot az ablak alatt.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-vr-overlay-enable-control-bar-keyboard">
+                    <span>Vezérlősáv billentyűzet gomb</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-cbar-key">?</span>
+                      <span id="desc-vr-cbar-key" role="tooltip" class="help-tip__content">Megjeleníti a billentyűzet behívó gombot a SteamVR vezérlősávján.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-vr-overlay-enable-control-bar-close">
+                    <span>Vezérlősáv bezárás gomb</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-cbar-close">?</span>
+                      <span id="desc-vr-cbar-close" role="tooltip" class="help-tip__content">Megjeleníti a bezárás gombot a SteamVR vezérlősávján.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-vr-overlay-enable-click-stabilization">
+                    <span>Kattintás stabilizáció</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-stab">?</span>
+                      <span id="desc-vr-stab" role="tooltip" class="help-tip__content">Csökkenti a kézremegésből adódó véletlen elmozdulásokat kattintáskor VR-ben.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-vr-overlay-modal">
+                    <span>Modális ablak mód</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vr-modal">?</span>
+                      <span id="desc-vr-modal" role="tooltip" class="help-tip__content">A Gamescope VR overlay ablakát modális (előtérbe kényszerített) ablakként nyitja meg.</span>
+                    </div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- HARMONIKA 4: RESHADE ÉS SPECIÁLIS PLATFORMOK -->
+          <div class="accordion">
+            <button type="button" class="accordion-toggle" id="accordion-btn-reshade-platform" aria-expanded="false" aria-controls="accordion-panel-reshade-platform">
+              <span>Reshade és Speciális Platformok</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="accordion-panel-reshade-platform" class="accordion-panel" role="region" aria-labelledby="accordion-btn-reshade-platform">
+              <div class="accordion-content">
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="reshade-effect">Reshade effekt neve (--reshade-effect)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-reshade">?</span>
+                        <span id="desc-reshade" role="tooltip" class="help-tip__content">A betöltendő Reshade effekt neve (pl. /usr/share/gamescope/reshade/Shaders/ mappából).</span>
+                      </div>
+                    </div>
+                    <input id="reshade-effect" type="text" placeholder="Pl.: CAS.fx" aria-describedby="desc-reshade">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="reshade-technique-idx">Technika indexe</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-reshade-idx">?</span>
+                        <span id="desc-reshade-idx" role="tooltip" class="help-tip__content">A kiválasztott effektből futtatandó technika sorszáma (indexe).</span>
+                      </div>
+                    </div>
+                    <input id="reshade-technique-idx" type="number" min="0" placeholder="Pl.: 0" aria-describedby="desc-reshade-idx">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="label-wrapper">
+                    <label for="mura-map">Mura kompenzációs térkép útvonal (--mura-map)</label>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-mura">?</span>
+                      <span id="desc-mura" role="tooltip" class="help-tip__content">Steam Deck kijelzőkhöz tartozó mura-kompenzációs fájl térképének elérési útja.</span>
+                    </div>
+                  </div>
+                  <input id="mura-map" type="text" placeholder="Pl.: /home/deck/.steam/steam/.../mura.map" aria-describedby="desc-mura">
+                </div>
+
+                <div class="checkbox-grid" style="margin-top: 1rem;">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-allow-deferred-backend">
+                    <span>Késleltetett backend indítás</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-defer">?</span>
+                      <span id="desc-defer" role="tooltip" class="help-tip__content">Lehetővé teszi a renderelő backend késleltetett elindítását, ha elsőre nem sikerülne felépíteni a kapcsolatot.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-keep-alive">
+                    <span>Gamescope életben tartása (--keep-alive)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-alive">?</span>
+                      <span id="desc-alive" role="tooltip" class="help-tip__content">A Gamescope futásban marad akkor is, ha az elindított játék vagy fő folyamat leállt.</span>
+                    </div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- HARMONIKA 5: HIBAKERESÉS ÉS FEJLESZTŐI BEÁLLÍTÁSOK -->
+          <div class="accordion">
+            <button type="button" class="accordion-toggle" id="accordion-btn-debug" aria-expanded="false" aria-controls="accordion-panel-debug">
+              <span>Hibakeresési és Fejlesztői Opciók</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="accordion-panel-debug" class="accordion-panel" role="region" aria-labelledby="accordion-btn-debug">
+              <div class="accordion-content">
+                
+                <div class="checkbox-grid">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-disable-layers">
+                    <span>libliftoff letiltása (--disable-layers)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-layers-dis">?</span>
+                      <span id="desc-db-layers-dis" role="tooltip" class="help-tip__content">Letiltja a hardveres síkokat kezelő libliftoff könyvtár használatát.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-debug-layers">
+                    <span>libliftoff debug naplózás</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-layers-dbg">?</span>
+                      <span id="desc-db-layers-dbg" role="tooltip" class="help-tip__content">Engedélyezi a részletes naplózást a libliftoff rétegekhez.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-debug-focus">
+                    <span>Ablakfókusz debug (--debug-focus)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-focus">?</span>
+                      <span id="desc-db-focus" role="tooltip" class="help-tip__content">Részletes információkat ír ki az ablakkezelő (XWM) fókuszváltásairól.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-synchronous-x11">
+                    <span>Szinkron X11 kapcsolat</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-sync-x11">?</span>
+                      <span id="desc-db-sync-x11" role="tooltip" class="help-tip__content">Kikényszeríti az X11 parancsok azonnali, szinkronizált végrehajtását. Jelentősen lassíthatja a futást, de segít hibát keresni.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-debug-hud">
+                    <span>Debug HUD megjelenítése</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-hud">?</span>
+                      <span id="desc-db-hud" role="tooltip" class="help-tip__content">Megjeleníti a Gamescope belső statisztikai adatrétegét a kijelzőn.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-debug-events">
+                    <span>X11 események naplózása</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-events">?</span>
+                      <span id="desc-db-events" role="tooltip" class="help-tip__content">A terminálba naplózza az összes beérkező X11 eseményt.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-force-composition">
+                    <span>Közvetlen kijelzés letiltása</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-comp">?</span>
+                      <span id="desc-db-comp" role="tooltip" class="help-tip__content">Letiltja a közvetlen képernyőre rajzolást (direct scan-out), ezzel kényszerítve a teljes kompozíciót.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-composite-debug">
+                    <span>Keretjelzők rajzolása (Debug)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-comp-m">?</span>
+                      <span id="desc-db-comp-m" role="tooltip" class="help-tip__content">Azonosító jeleket villant fel a képernyő sarkaiban a képkockák elkészültekor.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-disable-color-management">
+                    <span>Színkezelés kikapcsolása</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-color">?</span>
+                      <span id="desc-db-color" role="tooltip" class="help-tip__content">Teljesen letiltja a színprofilokat és a belső színkezelést.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-disable-xres">
+                    <span>XRes letiltása (--disable-xres)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-xres">?</span>
+                      <span id="desc-db-xres" role="tooltip" class="help-tip__content">Letiltja az XRes lekérdezéseket a folyamatazonosítók (PID) felkutatásakor.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-hdr-debug-force-support">
+                    <span>HDR támogatás szimulálása</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-hdr-s">?</span>
+                      <span id="desc-db-hdr-s" role="tooltip" class="help-tip__content">Szimulálja a HDR támogatást a játék felé, még akkor is, ha a monitorod valójában nem támogatja (a kimenet SDR-re lesz konvertálva).</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-hdr-debug-force-output">
+                    <span>HDR10 PQ kimenet kényszerítése</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-hdr-o">?</span>
+                      <span id="desc-db-hdr-o" role="tooltip" class="help-tip__content">Erőszakkal kiküldi a HDR10 PQ jelet a kijelzőre. Nem támogatott kijelzőn teljesen torz színeket eredményez.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-hdr-debug-heatmap">
+                    <span>HDR Fényerő hőtérkép</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-db-hdr-h">?</span>
+                      <span id="desc-db-hdr-h" role="tooltip" class="help-tip__content">Egy színes hőtérképet vetít a képernyőre, jelezve a jelenlegi HDR fényerő szinteket nits-ben.</span>
+                    </div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        
+</div>
+
+          <!-- 2. PROTON FÜL -->
+          <div id="tab-proton" class="tab-content" role="tabpanel" aria-labelledby="btn-tab-proton">
+
+          
+          <!-- ALAPVETŐ ÉS NAPLÓZÁSI BEÁLLÍTÁSOK -->
+          <div class="section-title">Alapvető és Naplózási Beállítások</div>
+
+          <div class="checkbox-grid" style="margin-bottom: 1.25rem;">
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-proton-log">
+              <span>Hibakeresési naplófájl generálása (PROTON_LOG=1)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-log">?</span>
+                <span id="desc-log" role="tooltip" class="help-tip__content">Létrehoz egy hibakeresési naplófájlt a felhasználói könyvtárban steam-APPID.log néven.</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="proton-log-dir">Naplók mentési mappája (PROTON_LOG_DIR)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-log-dir">?</span>
+                  <span id="desc-log-dir" role="tooltip" class="help-tip__content">Egyedi könyvtárat ad meg a Proton naplók elmentéséhez. Alapértelmezésben a saját mappa ($HOME).</span>
+                </div>
+              </div>
+              <input id="proton-log-dir" type="text" placeholder="Pl.: /tmp" aria-describedby="desc-log-dir">
+            </div>
+
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="winedebug">Wine hibakereső csatornák (WINEDEBUG)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-winedebug">?</span>
+                  <span id="desc-winedebug" role="tooltip" class="help-tip__content">Beállítja a Wine belső naplózási csatornáit. A csendes futáshoz használható a '-all' érték.</span>
+                </div>
+              </div>
+              <select id="winedebug" aria-describedby="desc-winedebug">
+                <option value="" selected>Alapértelmezett naplózás</option>
+                <option value="-all">-all (Csendes mód - teljesítmény javulhat)</option>
+                <option value="+timestamp,+pid,+tid">+timestamp,+pid,+tid (Részletes időbélyeges)</option>
+                <option value="+fps">+fps (FPS értékek kiírása)</option>
+                <option value="+loaddll">+loaddll (DLL betöltések figyelése)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- GRAFIKA ÉS MEGJELENÍTÉS -->
+          <div class="section-title">Grafika és D3D Fordítások (DXVK / VKD3D)</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="dxvk-hud">DXVK HUD kijelző (DXVK_HUD)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-hud">?</span>
+                  <span id="desc-hud" role="tooltip" class="help-tip__content">Megjeleníti a belső teljesítménymérőt a játékban. Vesszővel elválasztva megadható pl.: fps, devinfo, gputemp, memory.</span>
+                </div>
+              </div>
+              <input id="dxvk-hud" type="text" placeholder="Pl.: fps,devinfo" aria-describedby="desc-hud">
+            </div>
+
+            <div class="form-group">
+              <div class="label-wrapper">
+                <label for="dxvk-frame-rate">DXVK FPS korlát (DXVK_FRAME_RATE)</label>
+                <div class="help-tip">
+                  <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-dxvk-fps">?</span>
+                  <span id="desc-dxvk-fps" role="tooltip" class="help-tip__content">DXVK-alapú játékok (D3D9/10/11) belső képkocka-korlátozása. A 0 kikapcsolja a limitet.</span>
+                </div>
+              </div>
+              <input id="dxvk-frame-rate" type="number" min="0" placeholder="Nincs limit" aria-describedby="desc-dxvk-fps">
+            </div>
+          </div>
+
+          <div class="checkbox-grid" style="margin-bottom: 1.25rem;">
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-use-wined3d">
+              <span>WineD3D OpenGL használata (PROTON_USE_WINED3D=1)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-wined3d">?</span>
+                <span id="desc-wined3d" role="tooltip" class="help-tip__content">Forces OpenGL-alapú WineD3D fordítást a Vulkan-alapú DXVK helyett. Régi hardvereken hasznos.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-enable-hdr">
+              <span>HDR kimenet engedélyezése (PROTON_ENABLE_HDR=1)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-hdr-en">?</span>
+                <span id="desc-hdr-en" role="tooltip" class="help-tip__content">Engedélyezi a HDR támogatást, ha a monitorod és a rendszered támogatja azt.</span>
+              </div>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="flag-enable-nvapi">
+              <span>NVIDIA NVAPI engedélyezése (PROTON_ENABLE_NVAPI=1)</span>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-nvapi">?</span>
+                <span id="desc-nvapi" role="tooltip" class="help-tip__content">Bekapcsolja az Nvidia-specifikus API-kat, amik a DLSS-hez és a Raytracing-hez szükségesek.</span>
+              </div>
+            </label>
+          </div>
+
+          <!-- HARMONIKA 1: HALADÓ DXVK / VKD3D -->
+          <div class="accordion">
+            <button type="button" class="accordion-toggle" id="accordion-btn-dxvk-vkd3d" aria-expanded="false" aria-controls="accordion-panel-dxvk-vkd3d">
+              <span>Haladó DXVK és VKD3D Beállítások</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="accordion-panel-dxvk-vkd3d" class="accordion-panel" role="region" aria-labelledby="accordion-btn-dxvk-vkd3d">
+              <div class="accordion-content">
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vkd3d-config">VKD3D beállítások (VKD3D_CONFIG)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vkd3d-cfg">?</span>
+                        <span id="desc-vkd3d-cfg" role="tooltip" class="help-tip__content">VKD3D (D3D12 to Vulkan) konfiguráció. Raytracing-hez add meg a 'dxr' vagy 'dxr11' opciót.</span>
+                      </div>
+                    </div>
+                    <input id="vkd3d-config" type="text" placeholder="Pl.: dxr11,dxr" aria-describedby="desc-vkd3d-cfg">
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vkd3d-debug">VKD3D naplózás (VKD3D_DEBUG)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vkd3d-dbg">?</span>
+                        <span id="desc-vkd3d-dbg" role="tooltip" class="help-tip__content">A D3D12-Vulkan fordítás részletes naplózásának szintje.</span>
+                      </div>
+                    </div>
+                    <select id="vkd3d-debug" aria-describedby="desc-vkd3d-dbg">
+                      <option value="" selected>Alapértelmezett</option>
+                      <option value="none">none - Csendes</option>
+                      <option value="error">error - Csak hibák</option>
+                      <option value="warn">warn - Figyelmeztetések</option>
+                      <option value="info">info - Információs</option>
+                      <option value="debug">debug - Hibakeresési</option>
+                      <option value="trace">trace - Teljes nyomkövetés</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="vkd3d-feature-level">D3D12 Feature Level korlát</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-feat-lvl">?</span>
+                        <span id="desc-feat-lvl" role="tooltip" class="help-tip__content">Lehetővé teszi a Direct3D 12 szolgáltatásszintjének korlátozását a kompatibilitás érdekében.</span>
+                      </div>
+                    </div>
+                    <select id="vkd3d-feature-level" aria-describedby="desc-feat-lvl">
+                      <option value="" selected>Alapértelmezett</option>
+                      <option value="12_1">12_1 - Direct3D 12.1</option>
+                      <option value="12_0">12_0 - Direct3D 12.0</option>
+                      <option value="11_1">11_1 - Direct3D 11.1</option>
+                      <option value="11_0">11_0 - Direct3D 11.0</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="dxvk-config-file">Egyedi DXVK konfigurációs fájl</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-dxvk-cfg">?</span>
+                        <span id="desc-dxvk-cfg" role="tooltip" class="help-tip__content">Elérési út egy egyedi dxvk.conf fájlhoz a játék futási paramétereinek szabályozásához.</span>
+                      </div>
+                    </div>
+                    <input id="dxvk-config-file" type="text" placeholder="Pl.: /home/user/dxvk.conf" aria-describedby="desc-dxvk-cfg">
+                  </div>
+                </div>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-d3d10">
+                    <span>D3D10 DXVK fordítás letiltása (PROTON_NO_D3D10=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-nod10">?</span>
+                      <span id="desc-nod10" role="tooltip" class="help-tip__content">Megakadályozza a DXVK-t a D3D10 hívások lefordításában.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-d3d11">
+                    <span>D3D11 DXVK fordítás letiltása (PROTON_NO_D3D11=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-nod11">?</span>
+                      <span id="desc-nod11" role="tooltip" class="help-tip__content">Megakadályozza a DXVK-t a D3D11 hívások lefordításában.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-d3d12">
+                    <span>D3D12 VKD3D fordítás letiltása (PROTON_NO_D3D12=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-nod12">?</span>
+                      <span id="desc-nod12" role="tooltip" class="help-tip__content">Megakadályozza a VKD3D-t a D3D12 hívások lefordításában (a játék visszaeshet D3D11-re).</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-state-cache">
+                    <span>DXVK State Cache letiltása (DXVK_STATE_CACHE=0)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-nocache">?</span>
+                      <span id="desc-nocache" role="tooltip" class="help-tip__content">Kikapcsolja a DXVK shader gyorsítótárát. (Csak hibakereséshez).</span>
+                    </div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- HARMONIKA 2: CPU SZINKRONIZÁCIÓ ÉS RENDSZER -->
+          <div class="accordion">
+            <button type="button" class="accordion-toggle" id="accordion-btn-cpu-system" aria-expanded="false" aria-controls="accordion-panel-cpu-system">
+              <span>CPU Szinkronizáció és Rendszer</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="accordion-panel-cpu-system" class="accordion-panel" role="region" aria-labelledby="accordion-btn-cpu-system">
+              <div class="accordion-content">
+                
+                <div class="form-group">
+                  <div class="label-wrapper">
+                    <label for="mesa-vk-device-select">Vulkan GPU eszköz választás (MESA_VK_DEVICE_SELECT)</label>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-gpu-select">?</span>
+                      <span id="desc-gpu-select" role="tooltip" class="help-tip__content">Mesa drivereknél megmondja, melyik videókártyát használja a játék (pl. 1002:7300 hibrid laptopoknál).</span>
+                    </div>
+                  </div>
+                  <input id="mesa-vk-device-select" type="text" placeholder="Pl.: 1002:7300" aria-describedby="desc-gpu-select">
+                </div>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-esync">
+                    <span>Esync (Eventfd szinkr.) letiltása (PROTON_NO_ESYNC=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-esync">?</span>
+                      <span id="desc-esync" role="tooltip" class="help-tip__content">Kikapcsolja a gyorsabb eventfd alapú többszálúsági szinkronizációt. Hibakereséshez hasznos.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-no-fsync">
+                    <span>Fsync (Futex szinkr.) letiltása (PROTON_NO_FSYNC=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-fsync">?</span>
+                      <span id="desc-fsync" role="tooltip" class="help-tip__content">Kikapcsolja a modern Linux kernelekben található gyors szinkronizációs eljárást.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-use-ntsync">
+                    <span>Ntsync natív szinkr. engedélyezése (PROTON_USE_NTSYNC=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-ntsync">?</span>
+                      <span id="desc-ntsync" role="tooltip" class="help-tip__content">Engedélyezi az új NT szinkronizációt (kompatibilis, friss rendszermagot igényel).</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-force-laa">
+                    <span>Large Address Aware (LAA) kényszerítése</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-laa">?</span>
+                      <span id="desc-laa" role="tooltip" class="help-tip__content">Megengedi a 32-bites játékoknak a 2 GB feletti RAM elérését, ami megelőzheti a régi játékok memória-összeomlását.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-heap-delay-free">
+                    <span>Késleltetett memória-felszabadítás (Debug)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-heap">?</span>
+                      <span id="desc-heap" role="tooltip" class="help-tip__content">Segít elkerülni az aszinkron memória-felszabadítási hibákból eredő fagyásokat.</span>
+                    </div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- HARMONIKA 3: INTEGRÁCIÓK ÉS RENDSZER RÁJÁTSZÁS -->
+          <div class="accordion">
+            <button type="button" class="accordion-toggle" id="accordion-btn-integrations" aria-expanded="false" aria-controls="accordion-panel-integrations">
+              <span>Integrációk és Rendszer Rájátszások</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="accordion-panel-integrations" class="accordion-panel" role="region" aria-labelledby="accordion-btn-integrations">
+              <div class="accordion-content">
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="label-wrapper">
+                      <label for="wineprefix">Egyedi Wine Prefix mappa (WINEPREFIX)</label>
+                      <div class="help-tip">
+                        <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-prefix">?</span>
+                        <span id="desc-prefix" role="tooltip" class="help-tip__content">Egyedi elérési utat határoz meg a virtuális C: meghajtóhoz és regisztrációs adatbázishoz.</span>
+                      </div>
+                    </div>
+                    <input id="wineprefix" type="text" placeholder="Pl.: /home/user/jatek_prefix" aria-describedby="desc-prefix">
+                  </div>
+                </div>
+
+                <div class="checkbox-grid">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-gamemoderun">
+                    <span>Feral GameMode futtatás (gamemoderun)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-gamemode">?</span>
+                      <span id="desc-gamemode" role="tooltip" class="help-tip__content">Engedélyezi a Feral GameMode-ot a processzor és rendszer erőforrásainak automatikus játékra hangolásához.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-mangohud">
+                    <span>MangoHud teljesítmény-réteg aktíválása</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-mangohud-env">?</span>
+                      <span id="desc-mangohud-env" role="tooltip" class="help-tip__content">Környezeti változókon keresztül is bekapcsolja a MangoHud overlay megjelenítését a játék indításakor.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-vkbasalt">
+                    <span>vkBasalt grafikai shader réteg (ENABLE_VKBASALT=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-vkbasalt">?</span>
+                      <span id="desc-vkbasalt" role="tooltip" class="help-tip__content">Aktiválja a vkBasalt utófeldolgozó shader réteget a játék vizuális javítására (élesítés, színkorrekciók).</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-enable-wayland">
+                    <span>Kísérleti Wayland driver (PROTON_ENABLE_WAYLAND=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-wayland">?</span>
+                      <span id="desc-wayland" role="tooltip" class="help-tip__content">Engedélyezi a Wine beépített kísérleti Wayland driverét, kikerülve az Xwayland-et.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-hide-nvidia-gpu">
+                    <span>NVIDIA GPU elrejtése a játék elől (PROTON_HIDE_NVIDIA_GPU=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-hide-nv">?</span>
+                      <span id="desc-hide-nv" role="tooltip" class="help-tip__content">Elrejti az Nvidia azonosítókat, megelőzve azokat az összeomlásokat, ahol a játék nem kezeli le helyesen az Nvidia drivereket.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-dlss-upgrade">
+                    <span>DLSS verzió frissítés (PROTON_DLSS_UPGRADE=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-dlss-up">?</span>
+                      <span id="desc-dlss-up" role="tooltip" class="help-tip__content">Megengedi az újabb DLSS verziók felülírását a játék könyvtárában.</span>
+                    </div>
+                  </label>
+
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="flag-dump-debug-commands">
+                    <span>Debug parancsfájlok elmentése (PROTON_DUMP_DEBUG_COMMANDS=1)</span>
+                    <div class="help-tip">
+                      <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-dump-db">?</span>
+                      <span id="desc-dump-db" role="tooltip" class="help-tip__content">Létrehoz egy indítófájlt a /tmp könyvtárban, amivel a Steam-en kívülről is pontosan ugyanúgy indítható el a játék.</span>
+                    </div>
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- KÖRNYEZETI ÉS PARANCS MEZŐK -->
+          <div class="section-title">Egyéb paraméterek és indítóparancs</div>
+
+          <div class="form-group">
+            <div class="label-wrapper">
+              <label for="user-launch-args">Egyéb egyedi környezeti változók</label>
+              <div class="help-tip">
+                <span class="help-tip__trigger" tabindex="0" aria-describedby="desc-user-args">?</span>
+                <span id="desc-user-args" role="tooltip" class="help-tip__content">Bármilyen egyéb környezeti változó, amit a fenti beállítások nem fednek le. Pl. PROTON_NO_WRITE_WATCH=1</span>
+              </div>
+            </div>
+            <input id="user-launch-args" type="text" placeholder="Pl.: PROTON_NO_WRITE_WATCH=1" aria-describedby="desc-user-args">
+          </div>
+
+          
+
+        
+</div>
+
+          <!-- 3. DLL OVERRIDES FÜL -->
+          <div id="tab-dll" class="tab-content" role="tabpanel" aria-labelledby="btn-tab-dll">
+            <!-- FORMÁTUM VÁLASZTÁS -->
+            <div class="section-title">Kimeneti formátum</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="output-format">Formátum</label>
+                <select id="output-format">
+                  <option value="env-only">Csak környezeti változó (pl. WINEDLLOVERRIDES="...")</option>
+                  <option value="steam-command" selected>Steam indítási opció (pl. WINEDLLOVERRIDES="..." %command%)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="section-title">Gyakori DLL felülbírálások</div>
+            <div class="form-row" id="predefined-dlls-list">
+              <!-- JS dinamikusan generálja -->
+            </div>
+
+            <div class="section-title">Egyedi DLL felülbírálás hozzáadása</div>
+            <div class="form-row" style="border: 1px dashed var(--border-color); padding: 1.1rem; border-radius: var(--radius-md); background: rgba(255,255,255,0.01);">
+              <div class="form-group">
+                <label for="custom-dll-name">DLL fájl neve (kiterjesztés nélkül)</label>
+                <input type="text" id="custom-dll-name" placeholder="Pl.: ddraw, winhttp">
+              </div>
+              
+              <div class="form-group">
+                <label for="custom-dll-type">Típus</label>
+                <select id="custom-dll-type">
+                  <option value="n,b" selected>n,b (Native, utána Builtin - ajánlott modokhoz)</option>
+                  <option value="b,n">b,n (Builtin, utána Native)</option>
+                  <option value="n">n (Csak Native)</option>
+                  <option value="b">b (Csak Builtin)</option>
+                  <option value="d">d (Letiltva teljesen)</option>
+                </select>
+              </div>
+
+              <div style="margin-top: 0.5rem;">
+                <button class="btn btn-secondary" id="add-custom-dll-btn" type="button" style="width: 100%;">+ Hozzáadás a listához</button>
+              </div>
+            </div>
+
+            <div class="section-title">Hozzáadott egyedi DLL-ek</div>
+            <div class="form-row" id="custom-dlls-list">
+              <p style="font-size: 0.8rem; color: var(--text-muted); font-style: italic; text-align: center; padding: 0.5rem 0;" id="empty-custom-msg">Nincsenek egyedi DLL-ek hozzáadva.</p>
+            </div>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- JOBB OLDALI OSZLOP: KIMENET, SABLONOK ÉS SABLON EGYESÍTŐ -->
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        
+        <!-- KIMENET KÁRTYA -->
+        <section class="card" id="command-output-section" aria-labelledby="output-title">
+          <div class="panel-header">
+            <h2 id="output-title">Egyesített Parancs</h2>
+          </div>
+
+          <!-- Modul választó kapcsolók -->
+          <div class="checkbox-grid" style="margin-bottom: 1.25rem; background: rgba(255,255,255,0.02); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <label class="checkbox-label" style="font-weight: 600;">
+              <input type="checkbox" id="enable-dll-module" checked>
+              <span>DLL felülbírálások engedélyezése</span>
+            </label>
+            <label class="checkbox-label" style="font-weight: 600;">
+              <input type="checkbox" id="enable-proton-module" checked>
+              <span>Proton beállítások engedélyezése</span>
+            </label>
+            <label class="checkbox-label" style="font-weight: 600;">
+              <input type="checkbox" id="enable-gamescope-module" checked>
+              <span>Gamescope kompozitor engedélyezése</span>
+            </label>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="global-launch-command" style="font-weight: 600; margin-bottom: 0.25rem;">Játék indítóparancs (%command%)</label>
+            <input type="text" id="global-launch-command" value="%command%">
+          </div>
+          
+          <div class="output-box">
+            <pre id="command-display">%command%</pre>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.25rem;">
+            <button class="btn btn-primary" id="copy-btn" type="button" title="Egyesített parancs másolása">Másolás</button>
+            <button class="btn btn-secondary" id="example-btn" type="button" title="Példa beállítások betöltése">Példa</button>
+          </div>
+
+          <div class="copy-status" id="copy-status" role="status" aria-live="polite"></div>
+          <div id="sr-announcer" class="sr-only" aria-live="polite">A parancs frissült.</div>
+        </section>
+
+        <!-- KÜLSŐ SABLONOK BEOLVASÁSA (Presest Merger) -->
+        <section class="card" aria-labelledby="merger-title">
+          <div class="panel-header">
+            <h2 id="merger-title">Külső Sablonok Beolvasása</h2>
+          </div>
+          
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.4;">
+            Tölts be sablonokat a különálló builderek meglévő IndexedDB adatbázisaiból:
+          </p>
+
+          <div class="form-group">
+            <label for="merge-gamescope-preset">Mentett Gamescope sablonok</label>
+            <div class="merger-row">
+              <select id="merge-gamescope-preset">
+                <option value="">Nincs elérhető adatbázis</option>
+              </select>
+              <button class="btn btn-secondary" id="btn-load-ext-gamescope" type="button">Betöltés</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="merge-proton-preset">Mentett Proton sablonok</label>
+            <div class="merger-row">
+              <select id="merge-proton-preset">
+                <option value="">Nincs elérhető adatbázis</option>
+              </select>
+              <button class="btn btn-secondary" id="btn-load-ext-proton" type="button">Betöltés</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="merge-dll-preset">Mentett DLL sablonok</label>
+            <div class="merger-row">
+              <select id="merge-dll-preset">
+                <option value="">Nincs elérhető adatbázis</option>
+              </select>
+              <button class="btn btn-secondary" id="btn-load-ext-dll" type="button">Betöltés</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- EGYESÍTETT SABLONOK (Suite Presets) -->
+        <section class="card" aria-labelledby="presets-title-sec">
+          <div class="panel-header">
+            <h2 id="presets-title-sec">Suite Sablonok</h2>
+          </div>
+
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.4;">
+            Mentsd el a teljes egyesített állapotot (mindhárom modul beállításait egyszerre) a Suite helyi tárolójába.
+          </p>
+
+          <div class="presets-controls">
+            <button class="btn btn-secondary" id="import-btn" type="button" title="Importálás JSON fájlból">📂 Import</button>
+            <button class="btn btn-secondary" id="export-btn" type="button" title="Exportálás JSON fájlba">💾 Export</button>
+          </div>
+
+          <div class="preset-save-row">
+            <input type="text" id="preset-name-input" placeholder="Új egyesített sablon neve..." aria-label="Új egyesített sablon neve">
+            <button class="btn btn-success" id="save-preset-btn" type="button">Mentés</button>
+          </div>
+
+          <div class="presets-list" id="presets-container" role="region" aria-label="Mentett sablonok listája">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 1rem 0;" id="empty-presets-msg">
+              Nincsenek mentett egyesített sablonok.
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Steam Launcher Suite &copy; 2026. Minden jog fenntartva. &bull; <a href="https://git.rp1.hu/gabeszm/linux-gaming-commands" target="_blank" rel="noopener">git.rp1.hu/gabeszm/linux-gaming-commands</a></p>
+  </footer>
+
+  <!-- -------------------------------------------------------------
+       VANILLA JAVASCRIPT LOGIKA
+       ------------------------------------------------------------- -->
+  <script src="script.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,533 @@
+// Linux Games Commands - Forum Styles
+
+// 1. Gombok a felületen (Hero, Sidebar, Toolbar)
+.LinuxGamesCommands-sidebar-btn {
+  width: 100%;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #1f6feb 0%, #1158c7 100%);
+  border: 1px solid #388bfd;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(31, 111, 235, 0.25);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #388bfd 0%, #1f6feb 100%);
+    box-shadow: 0 4px 16px rgba(56, 139, 253, 0.4);
+    transform: translateY(-1px);
+  }
+}
+
+.LinuxGamesCommands-hero-btn {
+  margin-left: 8px;
+  font-weight: 600;
+  color: #58a6ff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  &:hover {
+    color: #79c0ff;
+    text-decoration: underline;
+  }
+}
+
+// 2. A fő Modal stílusai
+.LinuxGamesCommandsModal {
+  max-width: 860px;
+  width: 95%;
+
+  .Modal-content {
+    padding: 20px 24px;
+    background: #0d1117;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+  }
+
+  .Modal-header {
+    border-bottom: 1px solid #21262d;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f0f6fc;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      i {
+        color: #58a6ff;
+      }
+    }
+
+    p.subtitle {
+      margin: 4px 0 0 0;
+      font-size: 0.85rem;
+      color: #8b949e;
+    }
+  }
+
+  // Gyors sablon sáv
+  .lgc-presets-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+
+    .lgc-presets-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .lgc-preset-pill {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+
+      &:hover {
+        background: #30363d;
+        color: #58a6ff;
+        border-color: #58a6ff;
+      }
+    }
+  }
+
+  // Fül navigáció
+  .lgc-tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    border-bottom: 1px solid #21262d;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+
+    .lgc-tab-btn {
+      background: transparent;
+      border: none;
+      color: #8b949e;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: #f0f6fc;
+        background: #161b22;
+      }
+
+      &.active {
+        color: #58a6ff;
+        background: rgba(56, 139, 253, 0.15);
+        border: 1px solid rgba(56, 139, 253, 0.3);
+      }
+    }
+  }
+
+  // Fül tartalmak
+  .lgc-tab-content {
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 6px;
+    margin-bottom: 16px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 3px;
+    }
+  }
+
+  // Szekciók és kártyák a fülön belül
+  .lgc-section {
+    margin-bottom: 16px;
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 12px 16px;
+
+    .lgc-section-header {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #79c0ff;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  }
+
+  // Grid elrendezés mezőkhöz
+  .lgc-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .lgc-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 600px) {
+    .lgc-grid-2, .lgc-grid-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .lgc-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #8b949e;
+    }
+
+    input, select, textarea {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      color: #f0f6fc;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+
+      &:focus {
+        border-color: #58a6ff;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+      }
+    }
+  }
+
+  .lgc-checkbox-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      margin-top: 3px;
+      accent-color: #1f6feb;
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+    }
+
+    .lgc-checkbox-label {
+      display: flex;
+      flex-direction: column;
+
+      strong {
+        font-size: 0.85rem;
+        color: #f0f6fc;
+      }
+
+      span.desc {
+        font-size: 0.75rem;
+        color: #8b949e;
+      }
+    }
+  }
+
+  // DLL lista elemek
+  .lgc-dll-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: #0d1117;
+    margin-bottom: 6px;
+    border: 1px solid #21262d;
+
+    &:hover {
+      border-color: #30363d;
+    }
+
+    .lgc-dll-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+
+      input[type="checkbox"] {
+        accent-color: #1f6feb;
+        width: 16px;
+        height: 16px;
+      }
+
+      strong {
+        font-family: monospace;
+        font-size: 0.9rem;
+        color: #79c0ff;
+        min-width: 80px;
+      }
+
+      span {
+        font-size: 0.75rem;
+        color: #8b949e;
+      }
+    }
+
+    select {
+      background: #161b22;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      font-size: 0.75rem;
+      padding: 4px 6px;
+      border-radius: 4px;
+      width: 150px;
+    }
+  }
+
+  // Kimeneti parancs doboz
+  .lgc-output-container {
+    background: #05070a;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+    .lgc-output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+
+      .lgc-output-title-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .terminal-dots {
+          display: inline-flex;
+          gap: 5px;
+
+          span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+
+            &:nth-child(1) { background: #ff5f56; }
+            &:nth-child(2) { background: #ffbd2e; }
+            &:nth-child(3) { background: #27c93f; }
+          }
+        }
+
+        .lgc-output-label {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #8b949e;
+          letter-spacing: 0.5px;
+        }
+      }
+
+      .lgc-output-status {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #3fb950;
+      }
+    }
+
+    .lgc-output-code {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.95rem;
+      color: #58a6ff;
+      background: #090c10;
+      border: 1px solid #21262d;
+      border-radius: 6px;
+      padding: 10px 14px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      user-select: text;
+      margin: 0 0 12px 0;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+    }
+
+    .lgc-actions-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+
+      .lgc-actions-left {
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn-copy {
+        background: #238636;
+        border: 1px solid #2ea043;
+        color: #ffffff;
+        font-weight: 600;
+        padding: 6px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #2ea043;
+          box-shadow: 0 0 8px rgba(46, 160, 67, 0.4);
+        }
+
+        &.copied {
+          background: #1f6feb;
+          border-color: #388bfd;
+        }
+      }
+
+      .btn-insert {
+        background: #1f6feb;
+        border: 1px solid #388bfd;
+        color: #ffffff;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        &:hover {
+          background: #388bfd;
+        }
+      }
+
+      .btn-clear {
+        background: transparent;
+        border: 1px solid #30363d;
+        color: #8b949e;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:hover {
+          color: #f85149;
+          border-color: #f85149;
+        }
+      }
+    }
+  }
+}
+
+// 3. Fórum hozzászólásban megjelenő terminál kártya ([linux-command])
+.linux-command-container {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  margin: 14px 0;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+
+  .linux-command-header {
+    background: #161b22;
+    border-bottom: 1px solid #21262d;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .terminal-dots {
+      display: inline-flex;
+      gap: 5px;
+
+      span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+
+        &:nth-child(1) { background: #ff5f56; }
+        &:nth-child(2) { background: #ffbd2e; }
+        &:nth-child(3) { background: #27c93f; }
+      }
+    }
+
+    .linux-command-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #8b949e;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      i {
+        color: #58a6ff;
+      }
+    }
+
+    .linux-command-copy-btn {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #30363d;
+        color: #58a6ff;
+        border-color: #58a6ff;
+      }
+
+      &.copied {
+        background: #238636;
+        color: #ffffff;
+        border-color: #2ea043;
+      }
+    }
+  }
+
+  pre {
+    margin: 0;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+
+    code.linux-command-code {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.9rem;
+      color: #79c0ff;
+      background: transparent;
+      padding: 0;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  }
+}
