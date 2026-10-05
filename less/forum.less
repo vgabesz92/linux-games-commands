@@ -978,6 +978,12 @@
         }
       }
 
+      .lgc-output-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
       .lgc-output-badge {
         font-size: 0.7rem;
         font-weight: 700;
@@ -986,6 +992,95 @@
         padding: 2px 8px;
         border-radius: 4px;
         border: 1px solid rgba(56, 139, 253, 0.25);
+      }
+    }
+
+    .btn-copy-target {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      line-height: normal;
+
+      &:hover {
+        background: #30363d;
+        color: #58a6ff;
+        border-color: #58a6ff;
+      }
+
+      &.copied {
+        background: #238636 !important;
+        color: #ffffff !important;
+        border-color: #2ea043 !important;
+      }
+    }
+
+    .lgc-targets-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 14px;
+      width: 100%;
+    }
+
+    .lgc-target-box {
+      background: #090c10;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.2s ease;
+
+      &:hover {
+        border-color: #388bfd55;
+      }
+
+      .lgc-target-box-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: #161b22;
+        border-bottom: 1px solid #21262d;
+
+        .lgc-target-box-title {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.82rem;
+          font-weight: 600;
+          color: #f0f6fc;
+
+          .target-name {
+            font-weight: 600;
+          }
+
+          .target-badge {
+            font-size: 0.68rem;
+            padding: 1px 5px;
+            border-radius: 4px;
+            background: #21262d;
+            color: #8b949e;
+            font-family: monospace;
+            border: 1px solid #30363d;
+          }
+        }
+      }
+
+      .lgc-target-code {
+        margin: 0;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        padding: 10px 14px;
+        min-height: 38px;
       }
     }
 
@@ -1020,7 +1115,35 @@
 
       .lgc-actions-left {
         display: flex;
+        flex-wrap: wrap;
         gap: 8px;
+      }
+
+      .btn-copy-all {
+        background: #161b22;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #21262d;
+          color: #58a6ff;
+          border-color: #58a6ff;
+        }
+
+        &.copied {
+          background: #238636 !important;
+          color: #ffffff !important;
+          border-color: #2ea043 !important;
+        }
       }
 
       .btn-insert {

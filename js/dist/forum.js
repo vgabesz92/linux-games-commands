@@ -225,6 +225,7 @@
         bottles: false,
         terminal: false
       };
+      this.copiedTarget = null;
     }
 
     // Sablon alkalmazása
@@ -358,6 +359,7 @@
         bottles: false,
         terminal: false
       };
+      this.copiedTarget = null;
       m.redraw();
     }
 
@@ -370,6 +372,73 @@
       }
       this.targets[key] = !this.targets[key];
       m.redraw();
+    }
+
+    // Szöveg másolása vágólapra tartalék (fallback) támogatással
+    copyTextToClipboard(text, callback) {
+      if (!text) return;
+      const onSuccess = () => {
+        if (typeof callback === 'function') callback();
+      };
+
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+          if (this.fallbackCopyText(text)) onSuccess();
+        });
+      } else {
+        if (this.fallbackCopyText(text)) onSuccess();
+      }
+    }
+
+    fallbackCopyText(text) {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.top = '-9999px';
+        textArea.style.left = '-9999px';
+        textArea.setAttribute('readonly', '');
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const success = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        return success;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    // Egy adott célplatform indítóparancsának másolása
+    copyTarget(targetKey) {
+      const cmd = this.buildCommandForTarget(targetKey);
+      if (!cmd) return;
+      this.copyTextToClipboard(cmd, () => {
+        this.copiedTarget = targetKey;
+        m.redraw();
+        setTimeout(() => {
+          if (this.copiedTarget === targetKey) {
+            this.copiedTarget = null;
+            m.redraw();
+          }
+        }, 2000);
+      });
+    }
+
+    // Az összes kiválasztott indítóparancs másolása egyszerre
+    copyAll() {
+      const cmd = this.buildCommand();
+      if (!cmd) return;
+      this.copyTextToClipboard(cmd, () => {
+        this.copiedTarget = 'all';
+        m.redraw();
+        setTimeout(() => {
+          if (this.copiedTarget === 'all') {
+            this.copiedTarget = null;
+            m.redraw();
+          }
+        }, 2000);
+      });
     }
 
     // Render felbontás preset kiválasztásakor automatikus szélesség és magasság kitöltés
@@ -584,10 +653,30 @@
       return blocks.join('\n\n');
     }
 
-    // Beillesztés a hozzászólásba
+    // Beillesztés a hozzászólásba (több platform esetén platformonként külön [linux-command] doboz!)
     insertToPost() {
-      const cmd = this.buildCommand();
-      const bbcode = `[linux-command]${cmd}[/linux-command]`;
+      const activeKeys = Object.keys(this.targets).filter(k => this.targets[k]);
+      if (activeKeys.length === 0) activeKeys.push('steam');
+
+      let bbcode = '';
+      if (activeKeys.length === 1) {
+        const cmd = this.buildCommandForTarget(activeKeys[0]);
+        bbcode = `[linux-command]${cmd}[/linux-command]`;
+      } else {
+        const targetMeta = {
+          steam: 'STEAM (Indítási opciók: Tulajdonságok -> Általános)',
+          heroic: 'HEROIC GAMES LAUNCHER (Játékbeállítások -> Haladó -> Wrapper parancs)',
+          lutris: 'LUTRIS (Konfiguráció -> Rendszerbeállítások -> Parancs előtag / Prefix)',
+          bottles: 'BOTTLES (Palack beállítások -> Indítási argumentumok)',
+          terminal: 'TERMINÁL / BASH (Közvetlen parancssori futtatás)'
+        };
+        const blocks = activeKeys.map(key => {
+          const title = targetMeta[key] || key.toUpperCase();
+          const cmd = this.buildCommandForTarget(key);
+          return `[linux-command]\n# ${title}\n${cmd}\n[/linux-command]`;
+        });
+        bbcode = blocks.join('\n\n');
+      }
       let inserted = false;
 
       // 1. Ha a szerkesztőből közvetlenül hívták meg
@@ -754,31 +843,122 @@
       ]);
     }
 
-    // Kimeneti parancsdoboz renderelése (szigorúan 2 gombbal: beillesztés és törlés)
+    // Kimeneti parancsdoboz renderelése (egyesített és platformonkénti külön másolási lehetőséggel)
     renderOutputBox() {
-      const cmd = this.buildCommand();
       const activeKeys = Object.keys(this.targets).filter(k => this.targets[k]);
-      let badgeText = 'STEAM';
+      if (activeKeys.length === 0) activeKeys.push('steam');
+
+      const targetMeta = {
+        steam: { name: 'Steam', icon: 'fab fa-steam', badge: '%command%' },
+        heroic: { name: 'Heroic', icon: 'fas fa-rocket', badge: 'Wrapper' },
+        lutris: { name: 'Lutris', icon: 'fas fa-dragon', badge: 'Prefix' },
+        bottles: { name: 'Bottles', icon: 'fas fa-wine-bottle', badge: 'Args' },
+        terminal: { name: 'Terminál', icon: 'fas fa-terminal', badge: 'Bash' }
+      };
+
       if (activeKeys.length === 1) {
-        badgeText = activeKeys[0].toUpperCase();
-      } else if (activeKeys.length === 2) {
-        badgeText = `${activeKeys[0].toUpperCase()} + ${activeKeys[1].toUpperCase()}`;
-      } else if (activeKeys.length > 2) {
-        badgeText = `TÖBB INDÍTÓ (${activeKeys.length})`;
+        const key = activeKeys[0];
+        const meta = targetMeta[key] || { name: key.toUpperCase(), icon: 'fas fa-terminal', badge: '' };
+        const cmd = this.buildCommandForTarget(key);
+        const isCopied = this.copiedTarget === key;
+
+        return m('.lgc-output-container', [
+          m('.lgc-output-header', [
+            m('.lgc-output-title-group', [
+              m('.terminal-dots', [m('span'), m('span'), m('span')]),
+              m('.lgc-output-label', safeTrans('gabeszm-linux-games-commands.forum.output_label', 'GENERÁLT INDÍTÁSI PARANCS:'))
+            ]),
+            m('.lgc-output-header-actions', [
+              m('.lgc-output-badge', [
+                m(`i.${meta.icon}`, { style: 'margin-right: 4px;' }),
+                meta.name.toUpperCase()
+              ]),
+              m('button.btn-copy-target', {
+                type: 'button',
+                className: isCopied ? 'copied' : '',
+                onclick: () => this.copyTarget(key)
+              }, [
+                m('i', { className: isCopied ? 'fas fa-check' : 'fas fa-copy', style: 'margin-right: 4px;' }),
+                isCopied ? safeTrans('gabeszm-linux-games-commands.forum.copied', 'Másolva! ✓') : safeTrans('gabeszm-linux-games-commands.forum.copy', 'Másolás')
+              ])
+            ])
+          ]),
+          m('pre.lgc-output-code', cmd),
+          m('.lgc-actions-bar', [
+            m('.lgc-actions-left', [
+              m('button.btn-insert', {
+                type: 'button',
+                onclick: () => this.insertToPost()
+              }, [
+                m('i.fas.fa-pen-to-square'),
+                ' ' + safeTrans('gabeszm-linux-games-commands.forum.insert_to_post', 'Beillesztés a hozzászólásba')
+              ]),
+              m('button.btn-copy-all', {
+                type: 'button',
+                className: this.copiedTarget === key ? 'copied' : '',
+                onclick: () => this.copyTarget(key)
+              }, [
+                m('i', { className: this.copiedTarget === key ? 'fas fa-check' : 'fas fa-copy', style: 'margin-right: 6px;' }),
+                this.copiedTarget === key ? safeTrans('gabeszm-linux-games-commands.forum.copied', 'Másolva! ✓') : safeTrans('gabeszm-linux-games-commands.forum.copy', 'Másolás')
+              ])
+            ]),
+            m('button.btn-clear', {
+              type: 'button',
+              onclick: () => this.clearAll()
+            }, [
+              m('i.fas.fa-trash-alt', { style: 'margin-right: 6px;' }),
+              safeTrans('gabeszm-linux-games-commands.forum.clear', 'Minden törlése')
+            ])
+          ])
+        ]);
       }
 
-      return m('.lgc-output-container', [
+      // Több célplatform / indító esetén: platformonként külön kártya és saját másolás gomb!
+      const multiLabel = app && app.translator 
+        ? app.translator.trans('gabeszm-linux-games-commands.forum.multi_output_label', { count: activeKeys.length }) 
+        : `GENERÁLT INDÍTÁSI PARANCSOK (${activeKeys.length} PLATFORM KÜLÖN-KÜLÖN MÁSOLHATÓ):`;
+      const multiBadge = app && app.translator 
+        ? app.translator.trans('gabeszm-linux-games-commands.forum.multi_badge', { count: activeKeys.length }) 
+        : `TÖBB INDÍTÓ (${activeKeys.length})`;
+
+      return m('.lgc-output-container.multi-targets', [
         m('.lgc-output-header', [
           m('.lgc-output-title-group', [
             m('.terminal-dots', [m('span'), m('span'), m('span')]),
-            m('.lgc-output-label', safeTrans('gabeszm-linux-games-commands.forum.output_label', 'GENERÁLT INDÍTÁSI PARANCS:'))
+            m('.lgc-output-label', multiLabel)
           ]),
           m('.lgc-output-badge', [
-            m('i.fas.fa-terminal', { style: 'margin-right: 4px;' }),
-            badgeText
+            m('i.fas.fa-bullseye', { style: 'margin-right: 4px;' }),
+            multiBadge
           ])
         ]),
-        m('pre.lgc-output-code', cmd),
+        m('.lgc-targets-list', activeKeys.map(key => {
+          const meta = targetMeta[key] || { name: key.toUpperCase(), icon: 'fas fa-terminal', badge: '' };
+          const cmd = this.buildCommandForTarget(key);
+          const isCopied = this.copiedTarget === key;
+          const copyBtnLabel = isCopied 
+            ? safeTrans('gabeszm-linux-games-commands.forum.copied', 'Másolva! ✓') 
+            : (app && app.translator ? app.translator.trans('gabeszm-linux-games-commands.forum.copy_target', { target: meta.name }) : `${meta.name} másolása`);
+
+          return m('.lgc-target-box', [
+            m('.lgc-target-box-header', [
+              m('.lgc-target-box-title', [
+                m(`i.${meta.icon}`, { style: 'margin-right: 6px; color: #58a6ff;' }),
+                m('span.target-name', meta.name),
+                m('span.target-badge', meta.badge)
+              ]),
+              m('button.btn-copy-target', {
+                type: 'button',
+                className: isCopied ? 'copied' : '',
+                onclick: () => this.copyTarget(key)
+              }, [
+                m('i', { className: isCopied ? 'fas fa-check' : 'fas fa-copy', style: 'margin-right: 4px;' }),
+                copyBtnLabel
+              ])
+            ]),
+            m('pre.lgc-output-code.lgc-target-code', cmd)
+          ]);
+        })),
         m('.lgc-actions-bar', [
           m('.lgc-actions-left', [
             m('button.btn-insert', {
@@ -787,6 +967,14 @@
             }, [
               m('i.fas.fa-pen-to-square'),
               ' ' + safeTrans('gabeszm-linux-games-commands.forum.insert_to_post', 'Beillesztés a hozzászólásba')
+            ]),
+            m('button.btn-copy-all', {
+              type: 'button',
+              className: this.copiedTarget === 'all' ? 'copied' : '',
+              onclick: () => this.copyAll()
+            }, [
+              m('i', { className: this.copiedTarget === 'all' ? 'fas fa-check' : 'fas fa-copy', style: 'margin-right: 6px;' }),
+              this.copiedTarget === 'all' ? safeTrans('gabeszm-linux-games-commands.forum.copied', 'Másolva! ✓') : safeTrans('gabeszm-linux-games-commands.forum.copy_all', 'Összes másolása')
             ])
           ]),
           m('button.btn-clear', {
@@ -1815,6 +2003,36 @@
         });
       }
 
+      function fallbackExecCopy(text) {
+        try {
+          const textArea = document.createElement('textarea');
+          textArea.value = text;
+          textArea.style.position = 'fixed';
+          textArea.style.top = '-9999px';
+          textArea.style.left = '-9999px';
+          textArea.setAttribute('readonly', '');
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+          const res = document.execCommand('copy');
+          document.body.removeChild(textArea);
+          return res;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function copyWithFallback(text, onSuccess) {
+        if (!text) return;
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+            if (fallbackExecCopy(text)) onSuccess();
+          });
+        } else {
+          if (fallbackExecCopy(text)) onSuccess();
+        }
+      }
+
       // 5. Globális eseménykezelő a hozzászólásokban megjelenő [linux-command] dobozok másolás gombjához
       document.addEventListener('click', (e) => {
         const copyBtn = e.target.closest('.linux-command-copy-btn');
@@ -1826,8 +2044,15 @@
         const codeEl = container.querySelector('code');
         if (!codeEl) return;
 
-        const text = codeEl.innerText.trim();
-        navigator.clipboard.writeText(text).then(() => {
+        const rawText = codeEl.innerText.trim();
+        let textToCopy = rawText;
+        const lines = rawText.split('\n');
+        const nonCommentLines = lines.filter(l => !l.trim().startsWith('#') && l.trim().length > 0);
+        if (nonCommentLines.length > 0) {
+          textToCopy = nonCommentLines.join('\n');
+        }
+
+        copyWithFallback(textToCopy, () => {
           const origText = copyBtn.innerText;
           copyBtn.innerText = 'Másolva! ✓';
           copyBtn.classList.add('copied');
@@ -1837,6 +2062,108 @@
           }, 2000);
         });
       });
+
+      // 6. [linux-command] dobozok automatikus csinosítása és platformonkénti szétválasztása
+      function enhanceLinuxCommandContainers() {
+        const containers = document.querySelectorAll('.linux-command-container:not([data-enhanced])');
+        containers.forEach(container => {
+          container.setAttribute('data-enhanced', 'true');
+          const codeEl = container.querySelector('code');
+          if (!codeEl) return;
+
+          const text = codeEl.innerText.trim();
+          const titleEl = container.querySelector('.linux-command-title');
+
+          // Ha régebbi vagy egybefüggő többplatformos blokk van jelen (# ========================================================):
+          if (text.includes('# ========================================================')) {
+            const parts = text.split('# ========================================================').map(p => p.trim()).filter(Boolean);
+            if (parts.length > 1) {
+              const wrapper = document.createElement('div');
+              wrapper.className = 'linux-command-multi-wrapper';
+              wrapper.style.display = 'flex';
+              wrapper.style.flexDirection = 'column';
+              wrapper.style.gap = '12px';
+              wrapper.style.margin = '14px 0';
+
+              parts.forEach(part => {
+                const subLines = part.split('\n').map(l => l.trim()).filter(Boolean);
+                let title = 'Linux Indítási Parancs';
+                let icon = 'fas fa-gamepad';
+                const cmdLines = [];
+
+                subLines.forEach(l => {
+                  if (l.startsWith('#')) {
+                    const clean = l.replace(/^#\s*/, '').trim();
+                    if (clean && !clean.startsWith('=')) {
+                      title = clean;
+                      if (/steam/i.test(title)) icon = 'fab fa-steam';
+                      else if (/heroic/i.test(title)) icon = 'fas fa-rocket';
+                      else if (/lutris/i.test(title)) icon = 'fas fa-dragon';
+                      else if (/bottles/i.test(title)) icon = 'fas fa-wine-bottle';
+                      else if (/terminál|bash/i.test(title)) icon = 'fas fa-terminal';
+                    }
+                  } else {
+                    cmdLines.push(l);
+                  }
+                });
+
+                const subCmd = cmdLines.join('\n');
+                if (!subCmd) return;
+
+                const subCard = document.createElement('div');
+                subCard.className = 'linux-command-container';
+                subCard.setAttribute('data-enhanced', 'true');
+                subCard.innerHTML = `
+                  <div class="linux-command-header">
+                    <span class="terminal-dots"><span></span><span></span><span></span></span>
+                    <span class="linux-command-title"><i class="${icon}"></i> ${title}</span>
+                    <button type="button" class="linux-command-copy-btn">Másolás</button>
+                  </div>
+                  <pre><code class="linux-command-code">${subCmd}</code></pre>
+                `;
+                wrapper.appendChild(subCard);
+              });
+
+              if (wrapper.children.length > 0) {
+                container.parentNode.replaceChild(wrapper, container);
+                return;
+              }
+            }
+          }
+
+          // Egyedi doboz címe: ha az első sor pl. # STEAM ...
+          if (titleEl) {
+            const firstLine = text.split('\n')[0] || '';
+            if (firstLine.startsWith('#')) {
+              const cleanTitle = firstLine.replace(/^#\s*/, '').trim();
+              if (/steam/i.test(cleanTitle)) {
+                titleEl.innerHTML = '<i class="fab fa-steam"></i> ' + cleanTitle;
+              } else if (/heroic/i.test(cleanTitle)) {
+                titleEl.innerHTML = '<i class="fas fa-rocket"></i> ' + cleanTitle;
+              } else if (/lutris/i.test(cleanTitle)) {
+                titleEl.innerHTML = '<i class="fas fa-dragon"></i> ' + cleanTitle;
+              } else if (/bottles/i.test(cleanTitle)) {
+                titleEl.innerHTML = '<i class="fas fa-wine-bottle"></i> ' + cleanTitle;
+              } else if (/terminál|bash/i.test(cleanTitle)) {
+                titleEl.innerHTML = '<i class="fas fa-terminal"></i> ' + cleanTitle;
+              }
+
+              // Ha van alatta parancs, a címsort eltávolítjuk a kódmezőből, hogy tiszta parancs maradjon a dobozban
+              const lines = text.split('\n');
+              const remaining = lines.slice(1).join('\n').trim();
+              if (remaining) {
+                codeEl.textContent = remaining;
+              }
+            }
+          }
+        });
+      }
+
+      enhanceLinuxCommandContainers();
+      if (typeof MutationObserver !== 'undefined') {
+        const observer = new MutationObserver(() => enhanceLinuxCommandContainers());
+        observer.observe(document.body, { childList: true, subtree: true });
+      }
 
     });
   }
